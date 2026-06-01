@@ -54,6 +54,15 @@ mja dashboard       # ouvre le tableau de bord local (http://127.0.0.1:4321)
 
 `mja doctor` est ton ami : il liste précisément ce qui manque et la commande pour corriger.
 
+> **`mja` vit dans le venv.** La commande n'est disponible que lorsque l'environnement du projet
+> est activé. Dans un **nouveau terminal**, réactive-le d'abord :
+> ```bash
+> cd myjobagent && source .venv/bin/activate    # Windows : .venv\Scripts\activate
+> mja run
+> ```
+> Pour taper `mja` de partout sans activer le venv, ajoute un alias à ton shell
+> (`~/.zshrc`, `~/.bashrc`) : `alias mja="~/myjobagent/.venv/bin/mja"`.
+
 > **Adapter à ton profil** : `mja init --seed` génère une config orientée *backend Node.js
 > / Côte d'Azur* (l'exemple d'origine). Édite `jobhunt.config.json` à la main, ou regénère-la
 > avec le configurateur web, puis `mja init ~/Downloads/jobhunt.config.json`.

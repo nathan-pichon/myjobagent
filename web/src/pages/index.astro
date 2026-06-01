@@ -665,6 +665,27 @@ mja run</code>
                 <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:1rem;">
                   Quand la chasse est terminée, ton dashboard local s'ouvre automatiquement sur <code style="font-family:monospace;font-size:0.6875rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">http://localhost:4321</code>.
                 </p>
+
+                <div style="margin-top:1rem;padding:0.875rem 1rem;background:color-mix(in srgb, var(--jb-signal) 10%, var(--jb-surface));border:1px solid var(--jb-signal);border-radius:var(--jb-radius-input);">
+                  <p style="font-size:0.75rem;color:var(--jb-text);margin:0 0 0.5rem;font-weight:600;">↻ Relancer plus tard (nouveau terminal)</p>
+                  <p style="font-size:0.75rem;color:var(--jb-text-muted);margin:0 0 0.5rem;line-height:1.5;">
+                    La commande <code style="font-family:monospace;font-size:0.6875rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">mja</code> vit dans l'environnement du projet. Dans un nouveau terminal, réactive-le d'abord :
+                  </p>
+                  <div class="command-row">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
+                      <span style="font-size:0.625rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">macOS / Linux</span>
+                      <button type="button" class="copy-cmd" data-cmd={"cd myjobagent\nsource .venv/bin/activate\nmja run"} style="font-size:0.625rem;padding:0.15rem 0.45rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                    </div>
+                    <code class="code-block" style="display:block;padding:0.5rem 0.75rem;white-space:pre;line-height:1.6;font-size:0.6875rem;">cd myjobagent
+source .venv/bin/activate
+mja run</code>
+                  </div>
+                  <p style="font-size:0.6875rem;color:var(--jb-text-muted);margin:0.6rem 0 0;line-height:1.5;">
+                    Sur Windows : <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">.venv\Scripts\activate</code> à la place de la 2ᵉ ligne.
+                    <br/>Astuce : pour taper <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">mja</code> de n'importe où sans activer le venv, ajoute un alias dans ton shell —
+                    <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">alias mja="~/myjobagent/.venv/bin/mja"</code>.
+                  </p>
+                </div>
               </div>
 
               <!-- Base64 variant (collapsible) -->
