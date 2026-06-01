@@ -31,6 +31,9 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - name: Install & build
         working-directory: web
+        env:
+          # Project page is served from /<repo>/ — set the Astro base path.
+          PAGES_BASE: /${{ github.event.repository.name }}
         run: |
           npm ci
           npm run build
