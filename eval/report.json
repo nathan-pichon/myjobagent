@@ -1,0 +1,35 @@
+{
+  "threshold": 50,
+  "results": [
+    {
+      "model": "gemma4:e4b",
+      "n": 27,
+      "repeats": 1,
+      "score_stdev": null,
+      "precision": 0.706,
+      "recall": 1.0,
+      "f1": 0.828,
+      "accuracy": 0.815,
+      "mae": 16.7,
+      "tp": 12,
+      "fp": 5,
+      "fn": 0,
+      "tn": 10
+    },
+    {
+      "model": "gemma4:e2b",
+      "n": 27,
+      "repeats": 1,
+      "score_stdev": null,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.889,
+      "accuracy": 0.889,
+      "mae": 16.3,
+      "tp": 12,
+      "fp": 3,
+      "fn": 0,
+      "tn": 12
+    }
+  ]
+}

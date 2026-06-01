@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "profile": {
+    "roles": ["Senior Backend Engineer", "Tech Lead Backend", "Backend Architect"],
+    "stack_core": ["Node.js", "TypeScript"],
+    "stack_nice": ["MongoDB Atlas", "Docker", "Kubernetes"],
+    "exclusions": ["PHP", "on-site only"],
+    "geography": ["Nice", "Sophia-Antipolis", "Remote", "Full Remote"],
+    "contract_types": ["CDI", "Freelance"],
+    "seniority": "Senior",
+    "years_experience": 7,
+    "min_salary": 60000,
+    "min_tjm": 500
+  },
+  "llm": {
+    "provider": "ollama",
+    "model": "gemma4:e2b",
+    "base_url": "http://localhost:11434",
+    "temperature": 0.3
+  },
+  "search": {
+    "modes": ["PLATFORM", "CAREERS"],
+    "platforms": ["welcometothejungle.com", "free-work.com", "malt.fr", "talent.io"],
+    "max_steps": 200,
+    "max_results_per_query": 25
+  },
+  "sources": {
+    "france_travail_enabled": true,
+    "welcometothejungle_enabled": true,
+    "linkedin_enabled": false,
+    "indeed_enabled": false
+  },
+  "scoring": { "threshold": 50 }
+}

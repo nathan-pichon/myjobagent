@@ -1,0 +1,74 @@
+/* MyJobAgent — design tokens (source de vérité partagée web ↔ dashboard local)
+   Couleurs corrigées WCAG AA. Voir product/02_DESIGN.md. */
+
+:root {
+  /* Surfaces */
+  --jb-bg: #FBFCFE;
+  --jb-surface: #FFFFFF;
+  --jb-surface-alt: #F3F6FB;
+
+  /* Texte */
+  --jb-text: #0E1A2B;
+  --jb-text-muted: #4A5A72;       /* AA même à 14px */
+
+  /* Action (CTA uniquement) */
+  --jb-primary: #2E6BFF;
+  --jb-primary-soft: #E8F0FF;
+
+  /* Accent — déco vs texte (le teal vif échoue AA en texte) */
+  --jb-accent: #00C2A8;            /* logo, gradient, illustrations */
+  --jb-accent-text: #007A6A;       /* badges/texte succès */
+  --jb-accent-bg: #E6FAF7;
+
+  /* Signal (nouveauté/digest) */
+  --jb-signal: #FFC24B;            /* fonds/illustrations */
+  --jb-signal-text: #B07000;       /* texte */
+
+  --jb-danger: #E5345B;
+  --jb-border: #E4EAF2;
+
+  /* Rampe de score (≠ bleu CTA pour 60–74) */
+  --jb-score-strong: #007A6A;      /* ≥75  ★ Fort match */
+  --jb-score-good: #4F46E5;        /* 60–74 ◑ Bon match (indigo) */
+  --jb-score-partial: #B07000;     /* 50–59 ◔ Match partiel (ambre) */
+
+  /* Forme & profondeur */
+  --jb-radius-card: 12px;
+  --jb-radius-input: 8px;
+  --jb-radius-pill: 999px;
+  --jb-shadow-card: 0 8px 24px rgba(46,107,255,.10);
+
+  /* Focus (marche clair + dark) */
+  --jb-focus: 0 0 0 2px var(--jb-bg), 0 0 0 4px var(--jb-primary);
+
+  /* Gradient signature « faisceau » */
+  --jb-beam: linear-gradient(120deg, #2E6BFF 0%, #00C2A8 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --jb-bg: #0D1117;
+    --jb-surface: #161B22;
+    --jb-surface-alt: #1C2333;
+    --jb-text: #E6EDF3;
+    --jb-text-muted: #8B949E;
+    --jb-primary: #4D8EFF;
+    --jb-primary-soft: #1A2847;
+    --jb-accent: #3DD6BF;
+    --jb-accent-text: #3DD6BF;
+    --jb-accent-bg: #11261F;
+    --jb-signal: #FFD06B;
+    --jb-signal-text: #FFD06B;
+    --jb-danger: #FF6E85;
+    --jb-border: #30363D;
+    --jb-score-strong: #3DD6BF;
+    --jb-score-good: #8AB4FF;
+    --jb-score-partial: #FFD06B;
+    /* ombres invisibles sur fond sombre → on s'appuie sur les bordures */
+    --jb-shadow-card: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

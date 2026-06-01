@@ -1,0 +1,43 @@
+[project]
+name = "myjobagent"
+version = "0.1.0a0"
+description = "MyJobAgent — agent de recherche d'emploi open-source, local-first. Tourne chez toi avec ton propre LLM."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "MyJobAgent contributors" }]
+keywords = ["job-search", "local-first", "llm", "ollama", "agent"]
+
+dependencies = [
+  "pydantic>=2.6",
+  "typer>=0.12",
+  "rich>=13.7",
+  "jinja2>=3.1",
+  "requests>=2.31",
+]
+
+[project.optional-dependencies]
+# Scraping stack — optionnel pour que `validate`/`doctor` tournent sans navigateur.
+scrape = [
+  "ddgs>=6.1.7",
+  "playwright>=1.42.0",
+  "playwright-stealth>=1.0.6",
+]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+mja = "jobhunt.cli:app"
+# `jobhunt` kept as an alias for backward-compat during the rename.
+jobhunt = "jobhunt.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["jobhunt"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"jobhunt/prompts" = "jobhunt/prompts"

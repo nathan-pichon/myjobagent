@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# JobBeacon local data (never commit user data)
+jobhunt.db
+jobhunt.config.json
+.jobhunt_secrets.json
+jobhunt_dashboard.html
+.jobhunt_dashboard.html
+dashboard_jobs_*.html
+.preview/
+memory.json
+memory_failures.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+.env
