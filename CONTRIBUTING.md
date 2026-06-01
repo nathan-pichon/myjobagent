@@ -6,7 +6,7 @@ aucun backend externe hébergé en ligne. Garde ce principe en tête pour toute 
 ## Démarrer en dev
 ```bash
 git clone https://github.com/nathan-pichon/myjobagent.git
-cd jobbeacon
+cd myjobagent
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e '.[scrape,dev]'
 playwright install chromium

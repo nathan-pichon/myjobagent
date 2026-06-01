@@ -77,7 +77,7 @@ import Layout from '../layouts/Layout.astro';
               <span style="color:var(--jb-accent-text);font-weight:700;font-size:0.9375rem;">2</span>
             </div>
             <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;">Lance l'agent en local</h3>
-            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;">Télécharge ta config, exécute <code style="font-family:monospace;font-size:0.75rem;background:var(--jb-surface-alt);padding:0.1em 0.3em;border-radius:4px;">jobhunt run</code>. L'agent scanne pour toi.</p>
+            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;">Télécharge ta config, exécute <code style="font-family:monospace;font-size:0.75rem;background:var(--jb-surface-alt);padding:0.1em 0.3em;border-radius:4px;">mja run</code>. L'agent scanne pour toi.</p>
           </div>
           <div class="jb-card" style="padding:1.25rem;">
             <div style="width:2.25rem;height:2.25rem;background:var(--jb-signal);border-radius:var(--jb-radius-input);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;">
@@ -565,75 +565,100 @@ import Layout from '../layouts/Layout.astro';
                   <button type="button" class="os-tab" data-os="windows" style="padding:0.375rem 0.875rem;font-size:0.8125rem;border:none;background:none;cursor:pointer;color:var(--jb-text-muted);border-bottom:2px solid transparent;">Windows</button>
                 </div>
 
+                <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-bottom:1rem;">
+                  Projet pas encore publié sur PyPI : on installe depuis GitHub. Prérequis :
+                  <a href="https://www.python.org/downloads/" target="_blank" rel="noopener" style="color:var(--jb-primary);">Python ≥ 3.11</a>,
+                  <a href="https://git-scm.com/downloads" target="_blank" rel="noopener" style="color:var(--jb-primary);">git</a> et
+                  <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--jb-primary);">Ollama</a>.
+                </p>
+
                 <div id="os-mac" class="os-panel">
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer</span>
-                      <button type="button" class="copy-cmd" data-cmd="pipx install jobhunt" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (une fois)</span>
+                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[scrape]'\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">pipx install jobhunt</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">git clone https://github.com/nathan-pichon/myjobagent.git
+cd myjobagent
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e '.[scrape]'
+playwright install chromium
+ollama pull gemma4:e2b</code>
                   </div>
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer la config</span>
-                      <button type="button" class="copy-cmd" data-cmd="jobhunt init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer ta config</span>
+                      <button type="button" class="copy-cmd" data-cmd="mja init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">jobhunt init ~/Downloads/jobhunt.config.json</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">mja init ~/Downloads/jobhunt.config.json</code>
                   </div>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
                       <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">3. Lancer</span>
-                      <button type="button" class="copy-cmd" data-cmd="jobhunt run" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">jobhunt run</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor   # vérifie que tout est prêt
+mja run</code>
                   </div>
                 </div>
 
                 <div id="os-linux" class="os-panel" style="display:none;">
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer</span>
-                      <button type="button" class="copy-cmd" data-cmd="pipx install jobhunt" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (une fois)</span>
+                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[scrape]'\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">pipx install jobhunt</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">git clone https://github.com/nathan-pichon/myjobagent.git
+cd myjobagent
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e '.[scrape]'
+playwright install chromium
+ollama pull gemma4:e2b</code>
                   </div>
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer la config</span>
-                      <button type="button" class="copy-cmd" data-cmd="jobhunt init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer ta config</span>
+                      <button type="button" class="copy-cmd" data-cmd="mja init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">jobhunt init ~/Downloads/jobhunt.config.json</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">mja init ~/Downloads/jobhunt.config.json</code>
                   </div>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
                       <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">3. Lancer</span>
-                      <button type="button" class="copy-cmd" data-cmd="jobhunt run" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">jobhunt run</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor   # vérifie que tout est prêt
+mja run</code>
                   </div>
                 </div>
 
                 <div id="os-windows" class="os-panel" style="display:none;">
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (PowerShell)</span>
-                      <button type="button" class="copy-cmd" data-cmd="pip install jobhunt" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (PowerShell, une fois)</span>
+                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython -m venv .venv; .venv\\Scripts\\activate\npip install -e \".[scrape]\"\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">pip install jobhunt</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">git clone https://github.com/nathan-pichon/myjobagent.git
+cd myjobagent
+python -m venv .venv; .venv\Scripts\activate
+pip install -e ".[scrape]"
+playwright install chromium
+ollama pull gemma4:e2b</code>
                   </div>
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer la config</span>
-                      <button type="button" class="copy-cmd" data-cmd="jobhunt init %USERPROFILE%\\Downloads\\jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer ta config</span>
+                      <button type="button" class="copy-cmd" data-cmd="mja init %USERPROFILE%\\Downloads\\jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">jobhunt init %USERPROFILE%\Downloads\jobhunt.config.json</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">mja init %USERPROFILE%\Downloads\jobhunt.config.json</code>
                   </div>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
                       <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">3. Lancer</span>
-                      <button type="button" class="copy-cmd" data-cmd="jobhunt run" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">jobhunt run</code>
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor
+mja run</code>
                   </div>
                 </div>
 
@@ -654,7 +679,7 @@ import Layout from '../layouts/Layout.astro';
                     <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">Commande base64url</span>
                     <button type="button" id="copy-b64-cmd" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
                   </div>
-                  <code id="b64-cmd-display" class="code-block" style="display:block;padding:0.625rem 0.875rem;word-break:break-all;font-size:0.6875rem;">jobhunt init --b64 <em style="color:var(--jb-text-muted);">(génération en cours…)</em></code>
+                  <code id="b64-cmd-display" class="code-block" style="display:block;padding:0.625rem 0.875rem;word-break:break-all;font-size:0.6875rem;">mja init --b64 <em style="color:var(--jb-text-muted);">(génération en cours…)</em></code>
                 </div>
               </details>
 
@@ -850,11 +875,11 @@ function updateJSON() {
   const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(cfg))))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const b64Display = document.getElementById('b64-cmd-display');
-  if (b64Display) b64Display.textContent = `jobhunt init --b64 ${b64}`;
+  if (b64Display) b64Display.textContent = `mja init --b64 ${b64}`;
 
   const copyB64 = document.getElementById('copy-b64-cmd');
   if (copyB64) {
-    (copyB64 as HTMLElement & { _b64: string })._b64 = `jobhunt init --b64 ${b64}`;
+    (copyB64 as HTMLElement & { _b64: string })._b64 = `mja init --b64 ${b64}`;
   }
 }
 
