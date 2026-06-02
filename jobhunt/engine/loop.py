@@ -31,6 +31,8 @@ class RunStats:
     urls_seen: int = 0
     matches: int = 0
     new_matches: list[dict] = field(default_factory=list)
+    phase: str = "starting"        # human-readable current activity (live)
+    last_match: dict | None = None  # most recent match, for the live feed
 
 
 def _evaluate_offer(offer, text, llm, cfg, store, stats, threshold) -> None:
@@ -66,6 +68,10 @@ def _evaluate_offer(offer, text, llm, cfg, store, stats, threshold) -> None:
         stats.matches += 1
         if is_new:
             stats.new_matches.append(evaluation)
+            stats.last_match = {
+                "title": job.title, "company": job.company,
+                "score": job.score, "source": job.source,
+            }
             console.print(
                 f"  [green]✦ Match[/] {job.title} · {job.company} "
                 f"· [bold]{evaluation['score']}/100[/] [dim]({job.source})[/]"
@@ -101,9 +107,21 @@ def _rejection_reason(evaluation: dict, threshold: int) -> tuple[str, str]:
     return "below_threshold", f"score {score} < {threshold}"
 
 
-def run(cfg: JobHuntConfig, store: Store, *, max_steps: int | None = None) -> RunStats:
+def run(cfg: JobHuntConfig, store: Store, *, max_steps: int | None = None,
+        on_progress=None) -> RunStats:
+    """Run a hunt. `on_progress(stats)` is called after each meaningful step so a
+    live dashboard can reflect progress in real time (it reads the same SQLite
+    the loop writes to, so it always sees the latest matches)."""
     from jobhunt.engine import filters, scrapers  # lazy: needs `scrape` extra
     from jobhunt.sources import get_sources
+
+    def _tick(phase: str) -> None:
+        stats.phase = phase
+        if on_progress:
+            try:
+                on_progress(stats)
+            except Exception:  # noqa: BLE001  (a UI hook must never break the hunt)
+                pass
 
     llm = get_provider(cfg.llm)
     stats = RunStats()
@@ -142,6 +160,7 @@ def run(cfg: JobHuntConfig, store: Store, *, max_steps: int | None = None) -> Ru
             store.mark_visited(url)
             stats.urls_seen += 1
 
+            _tick(f"Analyse de {_domain(url)} ({len(queue)} en file)")
             if not filters.is_fasttrack_job_url(url, cfg.filters.fasttrack_job_patterns):
                 if not trieur.is_single_job(llm, url):
                     continue
@@ -151,6 +170,7 @@ def run(cfg: JobHuntConfig, store: Store, *, max_steps: int | None = None) -> Ru
                 console.print(f"[yellow]extract failed[/]: {url} ({e})")
                 continue
             _evaluate_offer(Offer(url=url, source=_domain(url)), text, llm, cfg, store, stats, threshold)
+            _tick(f"{stats.matches} matches · {len(queue)} en file")
             continue
 
         # ---- Phase 2: Scout generates the next query --------------------- #
@@ -182,6 +202,7 @@ def run(cfg: JobHuntConfig, store: Store, *, max_steps: int | None = None) -> Ru
         store.mark_search(decision.query)
         stats.searches += 1
         console.print(f"  [blue]Scout[/] ▸ {decision.query}")
+        _tick(f"Recherche : {decision.query[:60]}")
 
         # ---- Query every active source. Offers WITH text are scored now
         #      (no scraping); URL-only offers are queued for scraping. ------ #
@@ -203,6 +224,7 @@ def run(cfg: JobHuntConfig, store: Store, *, max_steps: int | None = None) -> Ru
                     store.mark_visited(off.url)
                     stats.urls_seen += 1
                     _evaluate_offer(off, off.text, llm, cfg, store, stats, threshold)
+                    _tick(f"{src.name} · {stats.matches} matches")
                 else:
                     if off.url not in queue and not filters.has_reject_pattern(
                         off.url, cfg.filters.reject_url_patterns

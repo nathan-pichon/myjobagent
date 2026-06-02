@@ -301,9 +301,17 @@ def test_scheduler_fires_and_arms(tmp_path, monkeypatch):
     class _Stats:
         steps = 1
         matches = 2
+        urls_seen = 3
+        phase = "test"
+        last_match = {"title": "X", "company": "Y", "score": 80, "source": "rss"}
         new_matches = [{"score": 80, "title": "X", "company": "Y", "location": "Z"}]
 
-    monkeypatch.setattr("jobhunt.engine.loop.run", lambda cfg, store, max_steps=None: _Stats())
+    def _fake_run(cfg, store, max_steps=None, on_progress=None):
+        if on_progress:
+            on_progress(_Stats())  # exercise the live-progress path
+        return _Stats()
+
+    monkeypatch.setattr("jobhunt.engine.loop.run", _fake_run)
     monkeypatch.setattr("jobhunt.engine.digest.print_digest", lambda *a, **k: None)
 
     sch = srv.Scheduler(default_config(), str(tmp_path / "s.db"))
@@ -314,10 +322,102 @@ def test_scheduler_fires_and_arms(tmp_path, monkeypatch):
         time.sleep(0.05)
     sch.stop()
     assert sch.last_run_summary() and sch.last_run_summary()["matches"] == 2
+    # progress is cleared after a run completes
+    assert sch.progress() is None
 
     sch2 = srv.Scheduler(default_config(), str(tmp_path / "s.db"))
     sch2.update(ScheduleConfig(enabled=True, every_hours=2, notify=False))
     assert sch2._next_at > time.time()
+
+
+def test_loop_reports_live_progress(tmp_path):
+    """The hunt loop calls on_progress with phase + last_match as it works."""
+    from jobhunt.sources.base import Offer
+    import jobhunt.engine.loop as L
+    import jobhunt.sources
+
+    class FakeLLM:
+        n = 0
+
+        def complete(self, p):
+            if "Scout" in p or "search query" in p:
+                FakeLLM.n += 1
+                return ('{"action":"SEARCH","parameter":"backend node"}' if FakeLLM.n == 1
+                        else '{"action":"STOP","parameter":""}')
+            return ('{"score":82,"verdict":"strong","title":"Senior Backend","company":"ACME",'
+                    '"location":"Nice","contract":"CDI","summary":"ok","breakdown":'
+                    '{"stack":{"score":40,"max":40},"role":{"score":18,"max":20},'
+                    '"location":{"score":24,"max":25},"contract":{"score":0,"max":15}}}')
+
+        def health(self):
+            return (True, "ok")
+
+    class FT:
+        name = "france-travail"
+
+        def available(self, c):
+            return True, "ok"
+
+        def fetch(self, c, q, limit):
+            yield Offer(url="https://ft/1", title="Senior Backend", company="ACME",
+                        location="Nice", contract="CDI", text="Node.js TypeScript " * 20,
+                        source="france-travail")
+
+    monkeypatch_get = lambda c: [FT()]
+    L.get_provider = lambda c: FakeLLM()
+    jobhunt.sources.get_sources = monkeypatch_get
+    L.get_sources = monkeypatch_get
+
+    events = []
+    store = Store(str(tmp_path / "p.db"))
+    stats = L.run(default_config(), store, max_steps=8,
+                  on_progress=lambda s: events.append((s.phase, s.matches,
+                                                        s.last_match["title"] if s.last_match else None)))
+    store.close()
+    assert stats.matches >= 1
+    assert any(e[2] == "Senior Backend" for e in events)  # last_match published
+    assert any("matches" in e[0] for e in events)         # phase strings
+
+
+def test_api_state_exposes_live_progress(tmp_path):
+    import json
+    import threading
+    import time
+    import urllib.request
+    from http.server import HTTPServer
+
+    from jobhunt import server as srv
+    from jobhunt.config import default_config
+
+    db = str(tmp_path / "st.db")
+    s = Store(db)
+    s.upsert_job(Job(url="https://a/1", title="SB", company="A", location="Nice", score=82, source="a"))
+    s.close()
+    cfg = default_config()
+    sch = srv.Scheduler(cfg, db)
+    sch._running = True
+    sch._progress = {"phase": "rss · 3 matches", "steps": 5, "urls_seen": 12,
+                     "matches": 3, "new": 2, "last_match": {"title": "Tech Lead"}}
+
+    handler = srv._make_handler(cfg, db, "127.0.0.1", 4411, str(tmp_path / "c.json"), sch)
+    httpd = HTTPServer(("127.0.0.1", 4411), handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    time.sleep(0.2)
+    try:
+        page = urllib.request.urlopen("http://127.0.0.1:4411/").read().decode()
+        tok = page.split('__JB_TOKEN__="')[1].split('"')[0]
+        st = json.loads(urllib.request.urlopen(
+            urllib.request.Request("http://127.0.0.1:4411/api/state", headers={"X-JB-Token": tok})
+        ).read())
+        assert st["running"] is True
+        assert st["progress"]["matches"] == 3
+        assert st["progress"]["last_match"]["title"] == "Tech Lead"
+        assert st["matches_count"] >= 1 and st["last_added"] > 0
+        # the page carries the live UI
+        assert "live-banner" in page and "new-jobs-toast" in page and "/api/state" in page
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
 
 
 def test_local_server_persists_and_guards(tmp_path: Path):

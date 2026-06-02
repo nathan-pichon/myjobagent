@@ -69,6 +69,26 @@ def _make_handler(cfg: JobHuntConfig, db: str, host: str, port: int, config_path
                 self._send(200, doc.encode("utf-8"), "text/html; charset=utf-8")
             elif self.path == "/api/health":
                 self._json(200, {"ok": True})
+            elif self.path == "/api/state":
+                # Lightweight live state for the auto-refreshing dashboard: hunt
+                # status/progress + a cheap signature of the jobs table so the
+                # page knows WHEN new cards appeared (without refetching them).
+                store = Store(db)
+                row = store.conn.execute(
+                    "SELECT COUNT(*) n, COALESCE(MAX(first_seen),0) last FROM jobs"
+                ).fetchone()
+                total = store.conn.execute(
+                    "SELECT COUNT(*) n FROM jobs WHERE score >= ?", (cfg.scoring.threshold,)
+                ).fetchone()["n"]
+                store.close()
+                self._json(200, {
+                    "running": scheduler.is_running(),
+                    "progress": scheduler.progress(),
+                    "last_run": scheduler.last_run_summary(),
+                    "jobs_count": row["n"],
+                    "matches_count": total,
+                    "last_added": row["last"],
+                })
             elif self.path == "/api/settings":
                 from jobhunt.secrets import status as secret_status
 
@@ -198,6 +218,7 @@ class Scheduler:
         self._wake = threading.Event()
         self._running = False           # a hunt is in progress right now
         self._last: dict | None = None
+        self._progress: dict | None = None  # live progress during a hunt
         self._next_at: float = 0.0
         self._thread: threading.Thread | None = None
 
@@ -207,6 +228,9 @@ class Scheduler:
 
     def last_run_summary(self) -> dict | None:
         return self._last
+
+    def progress(self) -> dict | None:
+        return self._progress
 
     def update(self, sched) -> None:
         self._sched = sched
@@ -230,9 +254,17 @@ class Scheduler:
         from jobhunt.engine.loop import run as run_loop
 
         self._running = True
+
+        def _on_progress(stats) -> None:
+            self._progress = {
+                "phase": stats.phase, "steps": stats.steps,
+                "urls_seen": stats.urls_seen, "matches": stats.matches,
+                "new": len(stats.new_matches), "last_match": stats.last_match,
+            }
+
         try:
             store = Store(self.db)
-            stats = run_loop(self.cfg, store)
+            stats = run_loop(self.cfg, store, on_progress=_on_progress)
             store.close()
             print_digest(stats.new_matches, self.cfg, notify=self._sched.notify)
             self._last = {
@@ -243,6 +275,7 @@ class Scheduler:
             self._last = {"at": time.time(), "error": str(e)}
         finally:
             self._running = False
+            self._progress = None
 
     def _loop(self) -> None:
         self._reschedule()

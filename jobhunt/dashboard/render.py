@@ -103,6 +103,14 @@ a.view{color:var(--jb-primary);text-decoration:none;font-size:.85rem}
 .secret-row input{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.4rem .6rem;border:1px solid var(--jb-border);border-radius:8px;background:var(--jb-surface);color:var(--jb-text)}
 .secret-row input:focus{outline:2px solid var(--jb-primary);outline-offset:1px}
 #settings input[type=number]{padding:.3rem .5rem;border:1px solid var(--jb-border);border-radius:8px;background:var(--jb-surface);color:var(--jb-text)}
+.live-banner{display:flex;align-items:center;gap:.6rem;background:var(--jb-primary-soft,#E8F0FF);border:1px solid var(--jb-primary);border-radius:10px;padding:.6rem .9rem;margin:.5rem 0;font-size:.85rem;color:var(--jb-text)}
+.live-counts{margin-left:auto;color:var(--jb-text-muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+.live-dot{width:9px;height:9px;border-radius:999px;background:var(--jb-primary);flex-shrink:0;animation:livepulse 1.2s ease-in-out infinite}
+@keyframes livepulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.new-toast{display:flex;align-items:center;gap:.8rem;background:var(--jb-accent-bg,#E6FAF7);border:1px solid var(--jb-accent,#00C2A8);border-radius:10px;padding:.6rem .9rem;margin:.5rem 0;font-size:.88rem;font-weight:600;color:var(--jb-text)}
+.toast-btn{margin-left:auto;background:var(--jb-accent,#00C2A8);color:#fff;border:none;border-radius:8px;padding:.35rem .8rem;font-size:.8rem;font-weight:600;cursor:pointer}
+.toast-btn:hover{filter:brightness(1.08)}
+@media(prefers-reduced-motion:reduce){.live-dot{animation:none}}
 """
 
 _MAX = {"stack": 40, "role": 20, "location": 25, "contract": 15}
@@ -512,6 +520,81 @@ _SETTINGS_JS = r"""
 })();
 """
 
+# Live auto-refresh: polls /api/state and reflects the hunt in real time.
+# SQLite is the realtime bus — the loop writes matches as it finds them, the
+# server reads the same DB, so the page only needs to know WHEN to refresh.
+_LIVE_JS = r"""
+(function(){
+  var TOKEN = window.__JB_TOKEN__ || null;
+  if(!TOKEN) return;                      // live mode needs the local server
+  var banner = document.getElementById('live-banner');
+  var phaseEl = document.getElementById('live-phase');
+  var countsEl = document.getElementById('live-counts');
+  var toast = document.getElementById('new-jobs-toast');
+  var toastLabel = document.getElementById('new-jobs-label');
+  var runTop = document.getElementById('run-now-top');
+  var baseline = null;                    // last_added known at page load
+  var wasRunning = false;
+
+  // Surface a "Lancer une chasse" button in the header (server mode only).
+  if(runTop){
+    runTop.hidden = false;
+    runTop.addEventListener('click', function(){
+      runTop.disabled = true;
+      fetch('/api/run-now', {method:'POST', headers:{'Content-Type':'application/json','X-JB-Token':TOKEN}, body:'{}'})
+        .catch(function(){}).finally(function(){ setTimeout(function(){ runTop.disabled=false; }, 1500); });
+    });
+  }
+
+  function fmtProgress(p){
+    if(!p) return 'Chasse en cours…';
+    return p.phase || 'Chasse en cours…';
+  }
+  function showToast(n){
+    toastLabel.textContent = '✦ ' + n + ' nouvelle' + (n>1?'s':'') + ' offre' + (n>1?'s':'') + ' — depuis ton ouverture';
+    toast.hidden = false;
+  }
+
+  function poll(){
+    fetch('/api/state', {headers:{'X-JB-Token':TOKEN}})
+      .then(function(r){ return r.json(); })
+      .then(function(s){
+        if(baseline === null) baseline = s.last_added || 0;
+
+        // live banner while a hunt runs
+        if(s.running){
+          banner.hidden = false;
+          phaseEl.textContent = fmtProgress(s.progress);
+          if(s.progress){
+            countsEl.textContent = s.progress.matches + ' matches · ' +
+              s.progress.urls_seen + ' offres vues';
+          }
+          wasRunning = true;
+        } else {
+          banner.hidden = true;
+          // a hunt just finished → nudge a refresh if new cards landed
+          if(wasRunning){
+            wasRunning = false;
+            if((s.last_added||0) > baseline) showToast(Math.max(1, s.jobs_count - 0));
+          }
+        }
+        // new jobs appeared (even outside a run we started) → offer to show them
+        if((s.last_added||0) > baseline && toast.hidden && !s.running){
+          showToast(1);
+        }
+      })
+      .catch(function(){ /* server gone; stop quietly */ });
+  }
+
+  document.getElementById('new-jobs-reload').addEventListener('click', function(){
+    location.reload();
+  });
+
+  poll();
+  setInterval(poll, 2500);
+})();
+"""
+
 
 def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
     jobs = store.get_jobs(min_score=cfg.scoring.threshold)
@@ -555,8 +638,18 @@ def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
 <title>MyJobAgent — Dashboard</title><style>{_CSS}</style></head>
 <body><div class="wrap">
 <header><div class="beam"></div><h1>MyJobAgent</h1>
+<button id="run-now-top" class="settings-btn" hidden aria-label="Lancer une chasse">▶ Lancer une chasse</button>
 <button id="open-settings" class="settings-btn" hidden aria-label="Réglages">⚙ Réglages</button>
 <span class="privacy">🔒 Tes données restent sur ta machine</span></header>
+<div id="live-banner" class="live-banner" hidden role="status" aria-live="polite">
+  <span class="live-dot"></span>
+  <span id="live-phase">Chasse en cours…</span>
+  <span id="live-counts" class="live-counts"></span>
+</div>
+<div id="new-jobs-toast" class="new-toast" hidden role="status" aria-live="polite">
+  <span id="new-jobs-label">✦ De nouvelles offres sont arrivées</span>
+  <button id="new-jobs-reload" class="toast-btn">Afficher</button>
+</div>
 <p class="meta">{len(jobs)} offre(s) · score moyen {avg} · {strong} fort(s) match(s) · 👍 {qs['up']} / 👎 {qs['down']}</p>
 <div class="bar">
   <div class="kpi"><b>{len(jobs)}</b><span>offres ≥ {cfg.scoring.threshold}</span></div>
@@ -569,6 +662,7 @@ def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
 </div>
 {_SETTINGS_HTML}
 <script>{_SETTINGS_JS}</script>
+<script>{_LIVE_JS}</script>
 </body></html>"""
 
     out_path.write_text(doc, encoding="utf-8")
