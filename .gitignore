@@ -23,3 +23,7 @@ memory_failures.json
 .idea/
 .vscode/
 .env
+
+# transient jsdom test scripts
+_t.cjs
+web/_t.cjs
