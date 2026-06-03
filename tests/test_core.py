@@ -140,7 +140,7 @@ def test_feedback_kinds_and_supervisor(tmp_path: Path):
     # dashboard: two toggles (irrelevant / outdated), no thumbs, pre-marked active
     out = render(s, default_config(), tmp_path / "d.html")
     h = out.read_text()
-    assert "Pas pertinent" in h and "Périmée" in h
+    assert "Not relevant" in h and "Outdated" in h  # English by default
     assert 'data-flag="irrelevant"' in h and 'data-flag="outdated"' in h
     assert "flag-on" in h  # the still-flagged 'outdated' job (b/2)
     assert "👍" not in h and "👎" not in h
@@ -177,7 +177,7 @@ def test_dashboard_shows_whynot(tmp_path: Path):
     s.record_rejection("https://y.com/paris", "location", "lieu hors zone", 40)
     out = render(s, default_config(), tmp_path / "d.html")
     txt = out.read_text()
-    assert "Pourquoi pas" in txt and "Lieu hors zone" in txt
+    assert "Why not?" in txt and "Out of area" in txt  # English by default
     s.close()
 
 
@@ -192,10 +192,11 @@ def test_dashboard_kanban(tmp_path: Path):
     s.set_status("https://b.com/2", "interested")
     out = render(s, default_config(), tmp_path / "d.html")
     h = out.read_text()
-    assert "Pipeline de candidatures" in h
+    assert "Application pipeline" in h     # English by default
     assert 'mja move' in h
-    assert "Intéressé" in h and "Trouvé" in h
+    assert ">Interested<" in h and ">Found<" in h
     assert 'aria-live' in h
+    assert 'id="dash-lang-fr"' in h        # language switch present
     assert h.count('class="kbn-col"') == 6
     s.close()
 

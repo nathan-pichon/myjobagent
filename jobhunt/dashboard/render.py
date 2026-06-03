@@ -16,10 +16,10 @@ if TYPE_CHECKING:
     from jobhunt.store import Store
 
 _VERDICT = {
-    "strong": ("Fort match", "★", "var(--jb-score-strong)"),
-    "good": ("Bon match", "◑", "var(--jb-score-good)"),
-    "partial": ("Match partiel", "◔", "var(--jb-score-partial)"),
-    "weak": ("Hors cible", "·", "var(--jb-text-muted)"),
+    "strong": ("Strong match", "★", "var(--jb-score-strong)", "verdict.strong"),
+    "good": ("Good match", "◑", "var(--jb-score-good)", "verdict.good"),
+    "partial": ("Partial match", "◔", "var(--jb-score-partial)", "verdict.partial"),
+    "weak": ("Off target", "·", "var(--jb-text-muted)", "verdict.weak"),
 }
 
 _CSS = """
@@ -96,6 +96,9 @@ a.view{color:var(--jb-primary);text-decoration:none;font-size:.85rem}
 .flag-btn:hover,.flag-btn:focus{border-color:var(--jb-danger);color:var(--jb-danger)}
 .flag-btn.flag-on{background:color-mix(in srgb, var(--jb-danger) 12%, var(--jb-surface));border-color:var(--jb-danger);color:var(--jb-danger);font-weight:600}
 @media(max-width:760px){.kbn{grid-template-columns:repeat(2,1fr)}}
+.lang-switch{display:inline-flex;gap:.15rem;margin-left:.5rem}
+.lang-btn{background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:6px;padding:.15rem .45rem;font-size:.7rem;cursor:pointer;color:var(--jb-text-muted)}
+.lang-btn.lang-on{background:var(--jb-primary);color:#fff;border-color:var(--jb-primary)}
 .settings-btn{margin-left:auto;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:999px;padding:.3rem .8rem;font-size:.8rem;cursor:pointer;color:var(--jb-text)}
 .settings-btn:hover,.settings-btn:focus{border-color:var(--jb-primary);color:var(--jb-primary)}
 .settings-btn+.privacy{margin-left:.5rem}
@@ -141,23 +144,23 @@ def _segment(name: str, seg: dict) -> str:
 
 def _card(job: dict) -> str:
     verdict = job.get("breakdown") and _verdict_from_score(job.get("score", 0))
-    label, icon, color = _VERDICT.get(verdict or _verdict_from_score(job.get("score", 0)), _VERDICT["weak"])
+    label, icon, color, lkey = _VERDICT.get(verdict or _verdict_from_score(job.get("score", 0)), _VERDICT["weak"])
     bd = job.get("breakdown") or {}
     segs = "".join(_segment(k, bd.get(k, {})) for k in ("stack", "role", "location", "contract") if bd.get(k))
     sources = job.get("sources", [])
-    multi = f'<span class="tag">{len(sources)} sources</span>' if len(sources) > 1 else ""
+    multi = f'<span class="tag"><span data-i18n="card.sources">{len(sources)} sources</span></span>' if len(sources) > 1 else ""
     return f"""<details class="card">
       <summary>
-        <div class="pill" style="background:{color}"><b>{job.get('score',0)}</b><span>{icon} {label}</span></div>
+        <div class="pill" style="background:{color}"><b>{job.get('score',0)}</b><span>{icon} <span data-i18n="{lkey}">{label}</span></span></div>
         <div class="head">
-          <h3>{html.escape(job.get('title','Sans titre'))}</h3>
-          <div class="sub">{html.escape(job.get('company','Inconnue'))} · {html.escape(job.get('location',''))} · {html.escape(job.get('contract',''))}</div>
+          <h3>{html.escape(job.get('title','—'))}</h3>
+          <div class="sub">{html.escape(job.get('company','—'))} · {html.escape(job.get('location',''))} · {html.escape(job.get('contract',''))}</div>
           <div class="tags"><span class="tag">{html.escape(job.get('source',''))}</span>{multi}</div>
         </div>
-        <a class="view" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener">Voir →</a>
+        <a class="view" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener" data-i18n="card.view">View →</a>
       </summary>
       <p class="summary">{html.escape(job.get('summary',''))}</p>
-      <div class="breakdown">{segs or '<em>Pas de détail disponible.</em>'}</div>
+      <div class="breakdown">{segs or '<em data-i18n="detail.nodetail">No detail available.</em>'}</div>
     </details>"""
 
 
@@ -173,14 +176,14 @@ def _verdict_from_score(score: int) -> str:
 
 _PIPELINE = ["found", "interested", "applied", "interview", "offer", "rejected"]
 _PIPELINE_LABEL = {
-    "found": "Trouvé", "interested": "Intéressé", "applied": "Postulé",
-    "interview": "Entretien", "offer": "Offre", "rejected": "Refusé",
+    "found": "Found", "interested": "Interested", "applied": "Applied",
+    "interview": "Interview", "offer": "Offer", "rejected": "Rejected",
 }
 
 
 def _card_detail(job: dict) -> str:
     """Full offer detail (reused in the modal). Verdict-first ScoreBreakdown."""
-    label, icon, color = _VERDICT.get(_verdict_from_score(job.get("score", 0)), _VERDICT["weak"])
+    label, icon, color, lkey = _VERDICT.get(_verdict_from_score(job.get("score", 0)), _VERDICT["weak"])
     bd = job.get("breakdown") or {}
     segs = "".join(_segment(k, bd.get(k, {})) for k in ("stack", "role", "location", "contract") if bd.get(k))
     sources = job.get("sources", []) or []
@@ -189,20 +192,20 @@ def _card_detail(job: dict) -> str:
         for i, u in enumerate(sources)
     ) if len(sources) > 1 else ""
     return f"""<div class="detail-head">
-        <div class="pill" style="background:{color}"><b>{job.get('score',0)}</b><span>{icon} {label}</span></div>
+        <div class="pill" style="background:{color}"><b>{job.get('score',0)}</b><span>{icon} <span data-i18n="{lkey}">{label}</span></span></div>
         <div>
-          <h2 style="font-size:1.2rem">{html.escape(job.get('title','Sans titre'))}</h2>
-          <div class="sub">{html.escape(job.get('company','Inconnue'))} · {html.escape(job.get('location',''))} · {html.escape(job.get('contract',''))}</div>
+          <h2 style="font-size:1.2rem">{html.escape(job.get('title','—'))}</h2>
+          <div class="sub">{html.escape(job.get('company','—'))} · {html.escape(job.get('location',''))} · {html.escape(job.get('contract',''))}</div>
         </div>
       </div>
       <div class="detail-actions" data-url="{html.escape(job.get('url',''))}" data-kind="{html.escape(job.get('feedback_kind') or '')}">
-        <a class="btn-offer" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener" data-i18n="detail.view">Voir l'offre ↗</a>
-        <button class="flag-btn{' flag-on' if job.get('feedback_kind') == 'irrelevant' else ''}" data-flag="irrelevant" aria-pressed="{'true' if job.get('feedback_kind') == 'irrelevant' else 'false'}" data-i18n="flag.irrelevant" title="L'agent en tiendra compte pour affiner sa stratégie">⊘ Pas pertinent</button>
-        <button class="flag-btn{' flag-on' if job.get('feedback_kind') == 'outdated' else ''}" data-flag="outdated" aria-pressed="{'true' if job.get('feedback_kind') == 'outdated' else 'false'}" data-i18n="flag.outdated" title="Offre périmée — l'agent affinera la détection de fraîcheur">⌛ Périmée</button>
+        <a class="btn-offer" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener" data-i18n="detail.view">View offer ↗</a>
+        <button class="flag-btn{' flag-on' if job.get('feedback_kind') == 'irrelevant' else ''}" data-flag="irrelevant" aria-pressed="{'true' if job.get('feedback_kind') == 'irrelevant' else 'false'}" data-i18n="flag.irrelevant" data-i18n-title="flag.irrelevant.title" title="The agent will use this to refine its strategy">⊘ Not relevant</button>
+        <button class="flag-btn{' flag-on' if job.get('feedback_kind') == 'outdated' else ''}" data-flag="outdated" aria-pressed="{'true' if job.get('feedback_kind') == 'outdated' else 'false'}" data-i18n="flag.outdated" data-i18n-title="flag.outdated.title" title="Stale offer — the agent will refine freshness detection">⌛ Outdated</button>
       </div>
       <p class="summary">{html.escape(job.get('summary',''))}</p>
-      <div class="breakdown">{segs or '<em>Pas de détail disponible.</em>'}</div>
-      {f'<div class="sub" style="margin-top:.8rem">Aussi vue sur : {src_links}</div>' if src_links else ''}"""
+      <div class="breakdown">{segs or '<em data-i18n="detail.nodetail">No detail available.</em>'}</div>
+      {f'<div class="sub" style="margin-top:.8rem"><span data-i18n="detail.alsoseen">Also seen on</span>: {src_links}</div>' if src_links else ''}"""
 
 
 def _kanban(store: "Store") -> str:
@@ -238,35 +241,35 @@ def _kanban(store: "Store") -> str:
             nexts = [n for n in _PIPELINE if n != s]
             opts = " ".join(
                 f'<button class="kbn-move" data-url="{html.escape(j["url"])}" data-status="{n}" '
-                f'aria-label="Déplacer vers {_PIPELINE_LABEL[n]}">{_PIPELINE_LABEL[n]}</button>'
+                f'data-i18n="pipeline.{n}" aria-label="{_PIPELINE_LABEL[n]}">{_PIPELINE_LABEL[n]}</button>'
                 for n in nexts
             )
             cards += (
                 f'<div class="kbn-card" draggable="true" tabindex="0" role="button" '
                 f'data-url="{html.escape(j["url"])}" data-detail="detail-{did}" '
-                f'aria-label="{html.escape(j.get("title",""))} — cliquer pour le détail">'
+                f'aria-label="{html.escape(j.get("title",""))}">'
                 f'<div class="kbn-score">{j.get("score",0)}</div>'
                 f'<div class="kbn-title">{html.escape(j.get("title","")[:48])}</div>'
                 f'<div class="kbn-sub">{html.escape(j.get("company","")[:30])}</div>'
                 f'<a class="kbn-link" href="{html.escape(j.get("url","#"))}" target="_blank" rel="noopener" '
-                f'onclick="event.stopPropagation()">Voir l\'offre ↗</a>'
+                f'onclick="event.stopPropagation()" data-i18n="card.viewoffer">View offer ↗</a>'
                 f'<div class="kbn-moves">{opts}</div></div>'
             )
         col_html += (
-            f'<div class="kbn-col" data-status="{s}"><div class="kbn-head">{_PIPELINE_LABEL[s]} '
+            f'<div class="kbn-col" data-status="{s}"><div class="kbn-head"><span data-i18n="pipeline.{s}">{_PIPELINE_LABEL[s]}</span> '
             f'<span class="kbn-count">{len(items)}</span></div>'
             f'<div class="kbn-drop">{cards or "<div class=kbn-empty>—</div>"}</div></div>'
         )
 
     return f"""<details class="card" style="margin-top:1.5rem" open>
-      <summary style="cursor:pointer"><div class="head"><h3>Pipeline de candidatures</h3>
-      <div class="sub">Glisse-dépose une carte entre colonnes, ou clique-la pour le détail. Chaque déplacement copie la commande <code>mja move</code> à coller (zéro serveur — tout reste local).</div></div></summary>
+      <summary style="cursor:pointer"><div class="head"><h3 data-i18n="pipeline.title">Application pipeline</h3>
+      <div class="sub" data-i18n="pipeline.hint">Drag a card between columns, or click it for details. Each move copies an <code>mja move</code> command to paste (zero server — everything stays local).</div></div></summary>
       <div class="kbn">{col_html}</div>
       <div id="kbn-cmd" class="kbn-cmd" role="status" aria-live="polite" hidden></div>
       {details}
     </details>
-    <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-label="Détail de l'offre">
-      <div class="modal-box"><button class="modal-close" aria-label="Fermer">×</button><div id="modal-body"></div></div>
+    <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-label="Offer detail">
+      <div class="modal-box"><button class="modal-close" aria-label="Close" data-i18n-aria="modal.close">×</button><div id="modal-body"></div></div>
     </div>
     <script>{_KANBAN_JS}</script>"""
 
@@ -284,16 +287,17 @@ _KANBAN_JS = r"""
         body: JSON.stringify({url:url, status:status})})
         .then(function(r){
           cmdBox.hidden=false;
-          cmdBox.textContent = r.ok ? '✓ déplacé vers « '+status+' » (enregistré)' : '⚠ échec de l\'enregistrement';
-        }).catch(function(){ cmdBox.hidden=false; cmdBox.textContent='⚠ serveur local injoignable'; });
+          cmdBox.textContent = r.ok ? (T('move.saved')+' '+status) : T('move.savefail');
+        }).catch(function(){ cmdBox.hidden=false; cmdBox.textContent=T('move.unreachable'); });
     } else {
       try { saved[url]=status; localStorage.setItem('jb_pipeline', JSON.stringify(saved)); } catch(e){}
       var cmd = 'mja move "' + url + '" ' + status;
       cmdBox.hidden = false;
-      cmdBox.textContent = '✓ déplacé — colle pour rendre permanent :  ' + cmd;
+      cmdBox.textContent = T('move.paste')+'  ' + cmd;
       if (navigator.clipboard) navigator.clipboard.writeText(cmd).catch(function(){});
     }
   }
+  function T(k){ return (window.__T && window.__T[k]) || k; }
   // recount columns AND keep the empty-placeholder in sync (single source of truth)
   function recount(){
     document.querySelectorAll('.kbn-col').forEach(function(col){
@@ -393,48 +397,48 @@ _KANBAN_JS = r"""
 
 
 _SETTINGS_HTML = """
-<div id="settings" class="modal" hidden role="dialog" aria-modal="true" aria-label="Réglages">
-  <div class="modal-box"><button class="modal-close" data-close-settings aria-label="Fermer">×</button>
-    <h2 style="font-size:1.2rem;margin-bottom:1rem">Réglages</h2>
+<div id="settings" class="modal" hidden role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="modal-box"><button class="modal-close" data-close-settings aria-label="Close" data-i18n-aria="modal.close">×</button>
+    <h2 style="font-size:1.2rem;margin-bottom:1rem" data-i18n="set.title">Settings</h2>
 
     <section style="margin-bottom:1.5rem">
-      <h3 style="font-size:1rem;margin-bottom:.5rem">⏱ Chasse automatique</h3>
-      <p class="sub" style="margin-bottom:.6rem">L'agent lance une chasse à intervalle régulier, tout seul, en local.</p>
+      <h3 style="font-size:1rem;margin-bottom:.5rem" data-i18n="set.auto.title">⏱ Automatic hunting</h3>
+      <p class="sub" style="margin-bottom:.6rem" data-i18n="set.auto.desc">The agent runs a hunt at a regular interval, on its own, locally.</p>
       <label style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem">
-        <input type="checkbox" id="sch-enabled"> Activer la chasse automatique
+        <input type="checkbox" id="sch-enabled"> <span data-i18n="set.auto.enable">Enable automatic hunting</span>
       </label>
-      <label class="set-row">Toutes les
-        <input type="number" id="sch-hours" min="0.25" max="168" step="0.25" style="width:5rem"> heures
+      <label class="set-row"><span data-i18n="set.auto.every">Every</span>
+        <input type="number" id="sch-hours" min="0.25" max="168" step="0.25" style="width:5rem"> <span data-i18n="set.auto.hours">hours</span>
       </label>
       <label style="display:flex;align-items:center;gap:.5rem;margin:.5rem 0">
-        <input type="checkbox" id="sch-notify"> Notification système sur nouveaux matches
+        <input type="checkbox" id="sch-notify"> <span data-i18n="set.auto.notify">System notification on new matches</span>
       </label>
       <div style="display:flex;gap:.5rem;margin-top:.6rem">
-        <button class="btn-offer" id="sch-save" style="border:none;cursor:pointer">Enregistrer</button>
-        <button class="fb-btn" id="run-now" title="Lancer une chasse maintenant">▶ Lancer maintenant</button>
+        <button class="btn-offer" id="sch-save" style="border:none;cursor:pointer" data-i18n="set.save">Save</button>
+        <button class="fb-btn" id="run-now" data-i18n="set.runnow" data-i18n-title="set.runnow.title" title="Run a hunt now">▶ Run now</button>
       </div>
       <div id="sch-status" class="sub" style="margin-top:.5rem" role="status" aria-live="polite"></div>
     </section>
 
     <section style="margin-bottom:1.5rem">
-      <h3 style="font-size:1rem;margin-bottom:.5rem">📡 Flux RSS de recrutement</h3>
-      <p class="sub" style="margin-bottom:.6rem">Sources officielles et stables — souvent avec le texte complet de l'offre (pas de scraping). Un flux par ligne, au format <code>Nom | https://url-du-flux</code>.</p>
+      <h3 style="font-size:1rem;margin-bottom:.5rem" data-i18n="set.rss.title">📡 Recruitment RSS feeds</h3>
+      <p class="sub" style="margin-bottom:.6rem" data-i18n="set.rss.desc">Official, stable sources — often with the full offer text (no scraping). One feed per line, format <code>Name | https://feed-url</code>.</p>
       <label style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">
-        <input type="checkbox" id="rss-enabled"> Activer les flux RSS
+        <input type="checkbox" id="rss-enabled"> <span data-i18n="set.rss.enable">Enable RSS feeds</span>
       </label>
       <textarea id="rss-feeds" rows="5" placeholder="WeWorkRemotely Backend | https://weworkremotely.com/categories/remote-back-end-programming-jobs.rss" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.5rem;border:1px solid var(--jb-border);border-radius:8px;background:var(--jb-surface);color:var(--jb-text)"></textarea>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem">
-        <button class="btn-offer" id="rss-save" style="border:none;cursor:pointer">Enregistrer les flux</button>
-        <button class="fb-btn" id="rss-restore" title="Remettre la liste de flux par défaut">↺ Restaurer les flux par défaut</button>
+        <button class="btn-offer" id="rss-save" style="border:none;cursor:pointer" data-i18n="set.rss.save">Save feeds</button>
+        <button class="fb-btn" id="rss-restore" data-i18n="set.rss.restore" data-i18n-title="set.rss.restore.title" title="Reset to the default feed list">↺ Restore default feeds</button>
       </div>
       <div id="rss-status" class="sub" style="margin-top:.5rem" role="status" aria-live="polite"></div>
     </section>
 
     <section>
-      <h3 style="font-size:1rem;margin-bottom:.5rem">🔑 Clés &amp; identifiants</h3>
-      <p class="sub" style="margin-bottom:.6rem">Stockées en local (fichier 0600 sur ta machine), jamais envoyées en ligne.</p>
+      <h3 style="font-size:1rem;margin-bottom:.5rem" data-i18n="set.keys.title">🔑 Keys &amp; credentials</h3>
+      <p class="sub" style="margin-bottom:.6rem" data-i18n="set.keys.desc">Stored locally (0600 file on your machine), never sent online.</p>
       <div id="secrets-list"></div>
-      <button class="btn-offer" id="secrets-save" style="border:none;cursor:pointer;margin-top:.6rem">Enregistrer les clés</button>
+      <button class="btn-offer" id="secrets-save" style="border:none;cursor:pointer;margin-top:.6rem" data-i18n="set.keys.save">Save keys</button>
       <div id="secrets-status" class="sub" style="margin-top:.5rem" role="status" aria-live="polite"></div>
     </section>
   </div>
@@ -452,10 +456,11 @@ _SETTINGS_JS = r"""
       headers: body?{'Content-Type':'application/json','X-JB-Token':TOKEN}:{'X-JB-Token':TOKEN},
       body: body?JSON.stringify(body):undefined}).then(function(r){return r.json();});
   }
+  function T(k){ return (window.__T && window.__T[k]) || k; }
   function fmtLast(l){
-    if(!l) return 'Aucune chasse encore.';
-    if(l.error) return 'Dernière chasse : erreur — '+l.error;
-    return 'Dernière chasse : '+l.matches+' matches ('+l.new+' nouveaux).';
+    if(!l) return T('set.last.none');
+    if(l.error) return T('set.last.error')+' '+l.error;
+    return T('set.last.matches').replace('{m}', l.matches).replace('{n}', l.new);
   }
   function load(){
     api('/api/settings').then(function(s){
@@ -463,7 +468,7 @@ _SETTINGS_JS = r"""
       document.getElementById('sch-hours').value = s.schedule.every_hours;
       document.getElementById('sch-notify').checked = s.schedule.notify;
       document.getElementById('sch-status').textContent =
-        (s.running?'⏳ chasse en cours… ':'') + fmtLast(s.last_run);
+        (s.running?T('set.running')+' ':'') + fmtLast(s.last_run);
       if(s.rss){
         document.getElementById('rss-enabled').checked = s.rss.enabled;
         document.getElementById('rss-feeds').value =
@@ -474,10 +479,10 @@ _SETTINGS_JS = r"""
       Object.keys(s.secrets).forEach(function(name){
         var sec = s.secrets[name];
         var row = document.createElement('div'); row.className='secret-row';
-        var status = sec.set ? (sec.source==='env' ? '✓ (variable d\'env)' : '✓ enregistrée') : '— non définie';
+        var status = sec.set ? (sec.source==='env' ? T('set.key.env') : T('set.key.saved')) : T('set.key.unset');
         row.innerHTML = '<label>'+sec.label+' <span class="sub">'+status+'</span></label>'+
-          '<input type="password" data-secret="'+name+'" placeholder="'+(sec.set?'•••••• (laisser vide pour garder)':'coller la valeur')+'"'+
-          (sec.locked?' disabled title="définie par variable d\'environnement"':'')+'>';
+          '<input type="password" data-secret="'+name+'" placeholder="'+(sec.set?T('set.key.ph.set'):T('set.key.ph.empty'))+'"'+
+          (sec.locked?' disabled title="'+T('set.key.locked')+'"':'')+'>';
         list.appendChild(row);
       });
     });
@@ -493,11 +498,11 @@ _SETTINGS_JS = r"""
       every_hours: parseFloat(document.getElementById('sch-hours').value)||6,
       notify: document.getElementById('sch-notify').checked
     }).then(function(r){
-      document.getElementById('sch-status').textContent = r.ok ? '✓ planification enregistrée'+(r.schedule.enabled?' (active)':'') : '⚠ '+(r.error||'erreur');
+      document.getElementById('sch-status').textContent = r.ok ? T('set.sched.saved')+(r.schedule.enabled?' '+T('set.active'):'') : '⚠ '+(r.error||'error');
     });
   });
   document.getElementById('run-now').addEventListener('click', function(){
-    document.getElementById('sch-status').textContent = '⏳ chasse lancée…';
+    document.getElementById('sch-status').textContent = T('set.hunt.started');
     api('/api/run-now', {}).then(function(){ setTimeout(load, 1500); });
   });
   document.getElementById('rss-save').addEventListener('click', function(){
@@ -508,7 +513,7 @@ _SETTINGS_JS = r"""
     }).filter(function(f){ return f && f.url; });
     api('/api/rss', {enabled: document.getElementById('rss-enabled').checked, feeds: feeds})
       .then(function(r){ document.getElementById('rss-status').textContent =
-        r.ok ? '✓ '+r.rss.feeds.length+' flux enregistré(s)' : '⚠ '+(r.error||'erreur'); });
+        r.ok ? '✓ '+r.rss.feeds.length+' '+T('set.rss.saved') : '⚠ '+(r.error||'error'); });
   });
   document.getElementById('rss-restore').addEventListener('click', function(){
     var defs = window.__JB_RSS_DEFAULTS__ || [];
@@ -516,16 +521,16 @@ _SETTINGS_JS = r"""
       defs.map(function(f){ return f.name+' | '+f.url; }).join('\n');
     document.getElementById('rss-enabled').checked = true;
     document.getElementById('rss-status').textContent =
-      defs.length+' flux par défaut chargés — clique « Enregistrer les flux » pour valider.';
+      T('set.rss.restored').replace('{n}', defs.length);
   });
   document.getElementById('secrets-save').addEventListener('click', function(){
     var updates={};
     document.querySelectorAll('#secrets-list input[data-secret]').forEach(function(i){
       if(!i.disabled && i.value) updates[i.dataset.secret]=i.value;
     });
-    if(!Object.keys(updates).length){ document.getElementById('secrets-status').textContent='Rien à enregistrer.'; return; }
+    if(!Object.keys(updates).length){ document.getElementById('secrets-status').textContent=T('set.key.nothing'); return; }
     api('/api/secrets', {updates:updates}).then(function(r){
-      document.getElementById('secrets-status').textContent = r.ok?'✓ clés enregistrées en local':'⚠ '+(r.error||'erreur');
+      document.getElementById('secrets-status').textContent = r.ok?T('set.key.done'):'⚠ '+(r.error||'error');
       load();
     });
   });
@@ -558,12 +563,13 @@ _LIVE_JS = r"""
     });
   }
 
+  function T(k){ return (window.__T && window.__T[k]) || k; }
   function fmtProgress(p){
-    if(!p) return 'Chasse en cours…';
-    return p.phase || 'Chasse en cours…';
+    if(!p) return T('live.hunting');
+    return p.phase || T('live.hunting');
   }
   function showToast(n){
-    toastLabel.textContent = '✦ ' + n + ' nouvelle' + (n>1?'s':'') + ' offre' + (n>1?'s':'') + ' — depuis ton ouverture';
+    toastLabel.textContent = T('live.newoffers').replace('{n}', n);
     toast.hidden = false;
   }
 
@@ -578,8 +584,8 @@ _LIVE_JS = r"""
           banner.hidden = false;
           phaseEl.textContent = fmtProgress(s.progress);
           if(s.progress){
-            countsEl.textContent = s.progress.matches + ' matches · ' +
-              s.progress.urls_seen + ' offres vues';
+            countsEl.textContent = s.progress.matches + ' ' + T('live.matches') + ' · ' +
+              s.progress.urls_seen + ' ' + T('live.seen');
           }
           wasRunning = true;
         } else {
@@ -608,13 +614,94 @@ _LIVE_JS = r"""
 """
 
 
+# Bilingual layer: English is the default (in the HTML), French via this dict.
+# Auto-detects from navigator.language, with an EN/FR switch persisted locally.
+# Also exposes window.__T for the runtime strings used by the other scripts.
+_I18N_JS = r"""
+(function(){
+  var FR = {
+    "verdict.strong":"Fort match","verdict.good":"Bon match","verdict.partial":"Match partiel","verdict.weak":"Hors cible",
+    "card.view":"Voir →","card.viewoffer":"Voir l'offre ↗","card.sources":"sources",
+    "detail.view":"Voir l'offre ↗","detail.nodetail":"Pas de détail disponible.","detail.alsoseen":"Aussi vue sur",
+    "flag.irrelevant":"⊘ Pas pertinent","flag.outdated":"⌛ Périmée",
+    "flag.irrelevant.title":"L'agent en tiendra compte pour affiner sa stratégie",
+    "flag.outdated.title":"Offre périmée — l'agent affinera la détection de fraîcheur",
+    "pipeline.found":"Trouvé","pipeline.interested":"Intéressé","pipeline.applied":"Postulé",
+    "pipeline.interview":"Entretien","pipeline.offer":"Offre","pipeline.rejected":"Refusé",
+    "pipeline.title":"Pipeline de candidatures",
+    "pipeline.hint":"Glisse-dépose une carte entre colonnes, ou clique-la pour le détail. Chaque déplacement copie une commande mja move à coller (zéro serveur — tout reste local).",
+    "modal.close":"Fermer",
+    "header.runhunt":"▶ Lancer une chasse","header.settings":"⚙ Réglages","header.privacy":"🔒 Tes données restent sur ta machine",
+    "live.hunting":"Chasse en cours…","live.matches":"matches","live.seen":"offres vues","live.show":"Afficher",
+    "live.newoffers":"✦ {n} nouvelle(s) offre(s) — depuis ton ouverture","live.newoffers.idle":"✦ De nouvelles offres sont arrivées",
+    "meta.offers":"offre(s)","meta.avg":"score moyen","meta.strong":"fort(s) match(s)","meta.flagged":"signalée(s)",
+    "kpi.offers":"offres ≥","kpi.strong":"≥ 75 (forts)","kpi.avg":"score moyen",
+    "empty.nomatch":"Aucune offre au-dessus du seuil. Essaie d'élargir le lieu ou de baisser le score minimum dans ta config, puis relance mja run.",
+    "whynot.title":"Pourquoi pas ?","whynot.discarded":"offre(s) écartée(s)","whynot.link":"lien",
+    "whynot.desc":"Ton agent a bien regardé ces offres mais les a écartées. Si tu vois des écarts injustes, élargis tes critères.",
+    "whynot.reason":"Motif","whynot.score":"Score","whynot.detail":"Détail",
+    "reason.below_threshold":"Score trop bas","reason.location":"Lieu hors zone","reason.stack":"Stack hors cible",
+    "reason.role":"Rôle/séniorité","reason.expired":"Expirée","reason.empty":"Page vide","reason.not_a_job":"Pas une offre",
+    "move.saved":"✓ déplacé vers","move.savefail":"⚠ échec de l'enregistrement","move.unreachable":"⚠ serveur local injoignable",
+    "move.paste":"✓ déplacé — colle pour rendre permanent :",
+    "set.title":"Réglages","set.auto.title":"⏱ Chasse automatique",
+    "set.auto.desc":"L'agent lance une chasse à intervalle régulier, tout seul, en local.",
+    "set.auto.enable":"Activer la chasse automatique","set.auto.every":"Toutes les","set.auto.hours":"heures",
+    "set.auto.notify":"Notification système sur nouveaux matches","set.save":"Enregistrer",
+    "set.runnow":"▶ Lancer maintenant","set.runnow.title":"Lancer une chasse maintenant",
+    "set.rss.title":"📡 Flux RSS de recrutement",
+    "set.rss.desc":"Sources officielles et stables — souvent avec le texte complet de l'offre (pas de scraping). Un flux par ligne, au format Nom | https://url-du-flux.",
+    "set.rss.enable":"Activer les flux RSS","set.rss.save":"Enregistrer les flux",
+    "set.rss.restore":"↺ Restaurer les flux par défaut","set.rss.restore.title":"Remettre la liste de flux par défaut",
+    "set.rss.saved":"flux enregistré(s)","set.rss.restored":"{n} flux par défaut chargés — clique « Enregistrer les flux » pour valider.",
+    "set.keys.title":"🔑 Clés & identifiants",
+    "set.keys.desc":"Stockées en local (fichier 0600 sur ta machine), jamais envoyées en ligne.","set.keys.save":"Enregistrer les clés",
+    "set.last.none":"Aucune chasse encore.","set.last.error":"Dernière chasse : erreur —",
+    "set.last.matches":"Dernière chasse : {m} matches ({n} nouveaux).","set.running":"⏳ chasse en cours…",
+    "set.key.env":"✓ (variable d'env)","set.key.saved":"✓ enregistrée","set.key.unset":"— non définie",
+    "set.key.ph.set":"•••••• (laisser vide pour garder)","set.key.ph.empty":"coller la valeur",
+    "set.key.locked":"définie par variable d'environnement",
+    "set.sched.saved":"✓ planification enregistrée","set.active":"(active)","set.hunt.started":"⏳ chasse lancée…",
+    "set.key.nothing":"Rien à enregistrer.","set.key.done":"✓ clés enregistrées en local"
+  };
+  function applyLang(lang){
+    window.__T = (lang==='fr') ? FR : {};   // EN = identity (HTML already English)
+    document.documentElement.lang = lang;
+    var T = function(k){ return (lang==='fr' && FR[k]) || null; };
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var v=T(el.dataset.i18n); if(v!==null && el.children.length===0) el.textContent=v;
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(function(el){
+      var v=T(el.dataset.i18nAria); if(v!==null) el.setAttribute('aria-label',v);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+      var v=T(el.dataset.i18nTitle); if(v!==null) el.setAttribute('title',v);
+    });
+    var en=document.getElementById('dash-lang-en'), fr=document.getElementById('dash-lang-fr');
+    if(en&&fr){ var on=lang==='fr'?fr:en, off=lang==='fr'?en:fr;
+      on.classList.add('lang-on'); off.classList.remove('lang-on');
+      on.setAttribute('aria-pressed','true'); off.setAttribute('aria-pressed','false'); }
+    try{ localStorage.setItem('mja_lang', lang); }catch(e){}
+  }
+  window.__setDashLang = applyLang;
+  var en=document.getElementById('dash-lang-en'), fr=document.getElementById('dash-lang-fr');
+  if(en) en.addEventListener('click', function(){ applyLang('en'); });
+  if(fr) fr.addEventListener('click', function(){ applyLang('fr'); });
+  var lang;
+  try{ var st=localStorage.getItem('mja_lang'); lang=(st==='en'||st==='fr')?st:null; }catch(e){ lang=null; }
+  if(!lang) lang=(navigator.language||'').toLowerCase().indexOf('fr')===0?'fr':'en';
+  applyLang(lang);
+})();
+"""
+
+
 def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
     jobs = store.get_jobs(min_score=cfg.scoring.threshold)
     qs = store.quality_stats()
     strong = len([j for j in jobs if j.get("score", 0) >= 75])
     avg = sum(j.get("score", 0) for j in jobs) // max(len(jobs), 1)
 
-    cards = "".join(_card(j) for j in jobs) or '<div class="empty">Aucune offre au-dessus du seuil. Essaie d\'élargir le lieu ou de baisser le score minimum dans ta config, puis relance <code>mja run</code>.</div>'
+    cards = "".join(_card(j) for j in jobs) or '<div class="empty" data-i18n="empty.nomatch">No offer above the threshold. Try widening the location or lowering the minimum score in your config, then run <code>mja run</code> again.</div>'
     kanban = _kanban(store)
 
     # "Why-not": collapsed list of discarded offers, so the user sees nothing
@@ -623,50 +710,55 @@ def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
     whynot = ""
     if rejected:
         _reason_label = {
-            "below_threshold": "Score trop bas", "location": "Lieu hors zone",
-            "stack": "Stack hors cible", "role": "Rôle/séniorité", "expired": "Expirée",
-            "empty": "Page vide", "not_a_job": "Pas une offre",
+            "below_threshold": ("Score too low", "reason.below_threshold"),
+            "location": ("Out of area", "reason.location"),
+            "stack": ("Off-stack", "reason.stack"),
+            "role": ("Role/seniority", "reason.role"),
+            "expired": ("Expired", "reason.expired"),
+            "empty": ("Empty page", "reason.empty"),
+            "not_a_job": ("Not a job", "reason.not_a_job"),
         }
         summary = store.rejection_summary()
-        chips = " · ".join(f"{_reason_label.get(k, k)} ({v})" for k, v in summary.items())
+        chips = " · ".join(f"{_reason_label.get(k, (k, ''))[0]} ({v})" for k, v in summary.items())
         rows = "".join(
-            f'<tr><td>{html.escape(_reason_label.get(r["reason"], r["reason"]))}</td>'
+            f'<tr><td data-i18n="{_reason_label.get(r["reason"], (r["reason"], ""))[1]}">{html.escape(_reason_label.get(r["reason"], (r["reason"], ""))[0])}</td>'
             f'<td>{r.get("score",0)}</td>'
             f'<td>{html.escape((r.get("detail") or ""))}</td>'
-            f'<td><a class="view" href="{html.escape(r["url"])}" target="_blank" rel="noopener">lien</a></td></tr>'
+            f'<td><a class="view" href="{html.escape(r["url"])}" target="_blank" rel="noopener" data-i18n="whynot.link">link</a></td></tr>'
             for r in rejected
         )
         whynot = f"""<details class="card" style="margin-top:1.5rem">
-          <summary style="cursor:pointer"><div class="head"><h3>Pourquoi pas ? — {len(rejected)} offre(s) écartée(s)</h3>
+          <summary style="cursor:pointer"><div class="head"><h3><span data-i18n="whynot.title">Why not?</span> — {len(rejected)} <span data-i18n="whynot.discarded">discarded offer(s)</span></h3>
           <div class="sub">{html.escape(chips)}</div>
-          <div class="sub" style="margin-top:.3rem">Ton agent a bien regardé ces offres mais les a écartées. Si tu vois des écarts injustes, élargis tes critères.</div></div></summary>
+          <div class="sub" style="margin-top:.3rem" data-i18n="whynot.desc">Your agent looked at these offers but discarded them. If you see unfair exclusions, widen your criteria.</div></div></summary>
           <table style="width:100%;border-collapse:collapse;margin-top:.8rem;font-size:.85rem">
-          <thead><tr style="text-align:left;color:var(--jb-text-muted)"><th>Motif</th><th>Score</th><th>Détail</th><th></th></tr></thead>
+          <thead><tr style="text-align:left;color:var(--jb-text-muted)"><th data-i18n="whynot.reason">Reason</th><th data-i18n="whynot.score">Score</th><th data-i18n="whynot.detail">Detail</th><th></th></tr></thead>
           <tbody>{rows}</tbody></table>
         </details>"""
 
-    doc = f"""<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+    doc = f"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MyJobAgent — Dashboard</title><style>{_CSS}</style></head>
 <body><div class="wrap">
 <header><div class="beam"></div><h1>MyJobAgent</h1>
-<button id="run-now-top" class="settings-btn" hidden aria-label="Lancer une chasse">▶ Lancer une chasse</button>
-<button id="open-settings" class="settings-btn" hidden aria-label="Réglages">⚙ Réglages</button>
-<span class="privacy">🔒 Tes données restent sur ta machine</span></header>
+<button id="run-now-top" class="settings-btn" hidden aria-label="Run a hunt" data-i18n="header.runhunt" data-i18n-aria="header.runhunt">▶ Run a hunt</button>
+<button id="open-settings" class="settings-btn" hidden aria-label="Settings" data-i18n="header.settings" data-i18n-aria="header.settings">⚙ Settings</button>
+<span class="lang-switch"><button id="dash-lang-en" class="lang-btn" aria-label="English">EN</button><button id="dash-lang-fr" class="lang-btn" aria-label="Français">FR</button></span>
+<span class="privacy" data-i18n="header.privacy">🔒 Your data stays on your machine</span></header>
 <div id="live-banner" class="live-banner" hidden role="status" aria-live="polite">
   <span class="live-dot"></span>
-  <span id="live-phase">Chasse en cours…</span>
+  <span id="live-phase" data-i18n="live.hunting">Hunt in progress…</span>
   <span id="live-counts" class="live-counts"></span>
 </div>
 <div id="new-jobs-toast" class="new-toast" hidden role="status" aria-live="polite">
-  <span id="new-jobs-label">✦ De nouvelles offres sont arrivées</span>
-  <button id="new-jobs-reload" class="toast-btn">Afficher</button>
+  <span id="new-jobs-label" data-i18n="live.newoffers.idle">✦ New offers have arrived</span>
+  <button id="new-jobs-reload" class="toast-btn" data-i18n="live.show">Show</button>
 </div>
-<p class="meta">{len(jobs)} offre(s) · score moyen {avg} · {strong} fort(s) match(s){f" · {qs['flagged']} signalée(s)" if qs['flagged'] else ""}</p>
+<p class="meta">{len(jobs)} <span data-i18n="meta.offers">offer(s)</span> · <span data-i18n="meta.avg">avg score</span> {avg} · {strong} <span data-i18n="meta.strong">strong match(es)</span>{f' · {qs["flagged"]} <span data-i18n="meta.flagged">flagged</span>' if qs['flagged'] else ""}</p>
 <div class="bar">
-  <div class="kpi"><b>{len(jobs)}</b><span>offres ≥ {cfg.scoring.threshold}</span></div>
-  <div class="kpi"><b>{strong}</b><span>≥ 75 (forts)</span></div>
-  <div class="kpi"><b>{avg}</b><span>score moyen</span></div>
+  <div class="kpi"><b>{len(jobs)}</b><span><span data-i18n="kpi.offers">offers ≥</span> {cfg.scoring.threshold}</span></div>
+  <div class="kpi"><b>{strong}</b><span data-i18n="kpi.strong">≥ 75 (strong)</span></div>
+  <div class="kpi"><b>{avg}</b><span data-i18n="kpi.avg">avg score</span></div>
 </div>
 {kanban}
 {cards}
@@ -675,6 +767,7 @@ def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
 {_SETTINGS_HTML}
 <script>{_SETTINGS_JS}</script>
 <script>{_LIVE_JS}</script>
+<script>{_I18N_JS}</script>
 </body></html>"""
 
     out_path.write_text(doc, encoding="utf-8")
