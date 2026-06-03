@@ -92,13 +92,28 @@ class Job:
         return f"{norm(self.title)}|{norm(self.company)}|{norm(self.location)}"
 
 
+# User feedback kinds — a single chosen reason per match, fuels the Supervisor.
+FEEDBACK_KINDS = ("irrelevant", "outdated")
+
+
 class Store:
     def __init__(self, path: str | Path = DEFAULT_DB):
         self.path = str(path)
         self.conn = sqlite3.connect(self.path)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(_SCHEMA)
+        self._migrate()
         self.conn.commit()
+
+    def _migrate(self) -> None:
+        """Idempotent schema migrations for existing local databases."""
+        cols = {r["name"] for r in self.conn.execute("PRAGMA table_info(jobs)")}
+        if "feedback_kind" not in cols:
+            self.conn.execute("ALTER TABLE jobs ADD COLUMN feedback_kind TEXT DEFAULT ''")
+            # backfill: legacy feedback = -1 → 'irrelevant'
+            self.conn.execute(
+                "UPDATE jobs SET feedback_kind='irrelevant' WHERE feedback = -1 AND (feedback_kind IS NULL OR feedback_kind='')"
+            )
 
     # --- jobs ------------------------------------------------------------- #
     def upsert_job(self, job: Job) -> bool:
@@ -156,21 +171,30 @@ class Store:
         self.conn.execute("UPDATE jobs SET status=? WHERE url=?", (status, url))
         self.conn.commit()
 
-    def set_feedback(self, url: str, feedback: int) -> None:
-        """feedback: -1 = irrelevant (fuels the Supervisor), 0 = none.
-        (Legacy +1 'relevant' is no longer set by the UI but still tolerated.)"""
-        self.conn.execute("UPDATE jobs SET feedback=? WHERE url=?", (max(-1, min(1, feedback)), url))
+    def set_feedback_kind(self, url: str, kind: str | None) -> None:
+        """Set the user's feedback on a match: 'irrelevant', 'outdated', or
+        None/'' to clear. Keeps the legacy integer `feedback` in sync (-1 for
+        any negative flag) so older queries still work."""
+        kind = kind or ""
+        if kind and kind not in FEEDBACK_KINDS:
+            raise ValueError(f"Unknown feedback kind: {kind}")
+        self.conn.execute(
+            "UPDATE jobs SET feedback_kind=?, feedback=? WHERE url=?",
+            (kind, -1 if kind else 0, url),
+        )
         self.conn.commit()
-
-    def set_irrelevant(self, url: str, irrelevant: bool = True) -> None:
-        """Mark/unmark a job as 'not relevant' — the single feedback signal."""
-        self.set_feedback(url, -1 if irrelevant else 0)
 
     def quality_stats(self) -> dict[str, int]:
         row = self.conn.execute(
-            "SELECT SUM(feedback=-1) irrelevant, COUNT(*) total FROM jobs"
+            "SELECT SUM(feedback_kind='irrelevant') irrelevant, "
+            "SUM(feedback_kind='outdated') outdated, COUNT(*) total FROM jobs"
         ).fetchone()
-        return {"irrelevant": row["irrelevant"] or 0, "total": row["total"] or 0}
+        return {
+            "irrelevant": row["irrelevant"] or 0,
+            "outdated": row["outdated"] or 0,
+            "flagged": (row["irrelevant"] or 0) + (row["outdated"] or 0),
+            "total": row["total"] or 0,
+        }
 
     # --- "Why-not": rejected offers --------------------------------------- #
     def record_rejection(self, url: str, reason: str, detail: str = "", score: int = 0) -> None:

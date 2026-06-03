@@ -92,9 +92,9 @@ a.view{color:var(--jb-primary);text-decoration:none;font-size:.85rem}
 .btn-offer:hover{filter:brightness(1.08)}
 .fb-btn{font-size:.95rem;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:8px;padding:.3rem .6rem;cursor:pointer;line-height:1}
 .fb-btn:hover,.fb-btn:focus{border-color:var(--jb-primary)}
-.irr-btn{font-size:.8rem;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:8px;padding:.4rem .7rem;cursor:pointer;line-height:1;color:var(--jb-text-muted)}
-.irr-btn:hover,.irr-btn:focus{border-color:var(--jb-danger);color:var(--jb-danger)}
-.irr-btn.irr-on{background:color-mix(in srgb, var(--jb-danger) 12%, var(--jb-surface));border-color:var(--jb-danger);color:var(--jb-danger);font-weight:600}
+.flag-btn{font-size:.8rem;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:8px;padding:.4rem .7rem;cursor:pointer;line-height:1;color:var(--jb-text-muted)}
+.flag-btn:hover,.flag-btn:focus{border-color:var(--jb-danger);color:var(--jb-danger)}
+.flag-btn.flag-on{background:color-mix(in srgb, var(--jb-danger) 12%, var(--jb-surface));border-color:var(--jb-danger);color:var(--jb-danger);font-weight:600}
 @media(max-width:760px){.kbn{grid-template-columns:repeat(2,1fr)}}
 .settings-btn{margin-left:auto;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:999px;padding:.3rem .8rem;font-size:.8rem;cursor:pointer;color:var(--jb-text)}
 .settings-btn:hover,.settings-btn:focus{border-color:var(--jb-primary);color:var(--jb-primary)}
@@ -195,9 +195,10 @@ def _card_detail(job: dict) -> str:
           <div class="sub">{html.escape(job.get('company','Inconnue'))} · {html.escape(job.get('location',''))} · {html.escape(job.get('contract',''))}</div>
         </div>
       </div>
-      <div class="detail-actions">
-        <a class="btn-offer" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener">Voir l'offre ↗</a>
-        <button class="irr-btn{' irr-on' if job.get('feedback') == -1 else ''}" data-url="{html.escape(job.get('url',''))}" aria-pressed="{'true' if job.get('feedback') == -1 else 'false'}" title="L'agent en tiendra compte pour affiner sa stratégie">⊘ Pas pertinent</button>
+      <div class="detail-actions" data-url="{html.escape(job.get('url',''))}" data-kind="{html.escape(job.get('feedback_kind') or '')}">
+        <a class="btn-offer" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener" data-i18n="detail.view">Voir l'offre ↗</a>
+        <button class="flag-btn{' flag-on' if job.get('feedback_kind') == 'irrelevant' else ''}" data-flag="irrelevant" aria-pressed="{'true' if job.get('feedback_kind') == 'irrelevant' else 'false'}" data-i18n="flag.irrelevant" title="L'agent en tiendra compte pour affiner sa stratégie">⊘ Pas pertinent</button>
+        <button class="flag-btn{' flag-on' if job.get('feedback_kind') == 'outdated' else ''}" data-flag="outdated" aria-pressed="{'true' if job.get('feedback_kind') == 'outdated' else 'false'}" data-i18n="flag.outdated" title="Offre périmée — l'agent affinera la détection de fraîcheur">⌛ Périmée</button>
       </div>
       <p class="summary">{html.escape(job.get('summary',''))}</p>
       <div class="breakdown">{segs or '<em>Pas de détail disponible.</em>'}</div>
@@ -352,21 +353,29 @@ _KANBAN_JS = r"""
     var tpl = document.getElementById(card.dataset.detail);
     if(!tpl) return;
     body.innerHTML = ''; body.appendChild(tpl.content.cloneNode(true));
-    // wire the "Pas pertinent" toggle — the single feedback signal the agent
-    // uses to refine its strategy (server mode persists; file mode copies a cmd)
-    var irr = body.querySelector('.irr-btn');
-    if(irr){
-      irr.addEventListener('click', function(){
-        var url=irr.dataset.url;
-        var on = irr.classList.toggle('irr-on');
-        irr.setAttribute('aria-pressed', on ? 'true' : 'false');
-        if(TOKEN){
-          fetch('/api/irrelevant',{method:'POST',headers:{'Content-Type':'application/json','X-JB-Token':TOKEN},
-            body:JSON.stringify({url:url, irrelevant:on})}).catch(function(){});
-        } else {
-          var cmd='mja irrelevant "'+url+'"' + (on ? '' : ' --undo');
-          if(navigator.clipboard) navigator.clipboard.writeText(cmd).catch(function(){});
-        }
+    // wire the feedback toggles (irrelevant / outdated) — mutually exclusive.
+    // These are the signals the agent uses to refine its strategy (mja tune).
+    var actions = body.querySelector('.detail-actions');
+    if(actions){
+      var url = actions.dataset.url;
+      actions.querySelectorAll('.flag-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var kind = btn.dataset.flag;
+          var wasOn = btn.classList.contains('flag-on');
+          // clear all, then set this one unless we're toggling it off
+          actions.querySelectorAll('.flag-btn').forEach(function(b){
+            b.classList.remove('flag-on'); b.setAttribute('aria-pressed','false');
+          });
+          var nowKind = wasOn ? '' : kind;
+          if(nowKind){ btn.classList.add('flag-on'); btn.setAttribute('aria-pressed','true'); }
+          if(TOKEN){
+            fetch('/api/feedback-kind',{method:'POST',headers:{'Content-Type':'application/json','X-JB-Token':TOKEN},
+              body:JSON.stringify({url:url, kind:nowKind || null})}).catch(function(){});
+          } else {
+            var cmd = nowKind ? ('mja flag "'+url+'" '+nowKind) : ('mja flag "'+url+'" --undo');
+            if(navigator.clipboard) navigator.clipboard.writeText(cmd).catch(function(){});
+          }
+        });
       });
     }
     modal.hidden = false; modal.querySelector('.modal-close').focus();
@@ -653,7 +662,7 @@ def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
   <span id="new-jobs-label">✦ De nouvelles offres sont arrivées</span>
   <button id="new-jobs-reload" class="toast-btn">Afficher</button>
 </div>
-<p class="meta">{len(jobs)} offre(s) · score moyen {avg} · {strong} fort(s) match(s){f" · {qs['irrelevant']} marquée(s) non pertinente(s)" if qs['irrelevant'] else ""}</p>
+<p class="meta">{len(jobs)} offre(s) · score moyen {avg} · {strong} fort(s) match(s){f" · {qs['flagged']} signalée(s)" if qs['flagged'] else ""}</p>
 <div class="bar">
   <div class="kpi"><b>{len(jobs)}</b><span>offres ≥ {cfg.scoring.threshold}</span></div>
   <div class="kpi"><b>{strong}</b><span>≥ 75 (forts)</span></div>

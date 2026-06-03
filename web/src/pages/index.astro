@@ -21,10 +21,26 @@ import Layout from '../layouts/Layout.astro';
         <span style="font-weight:700;font-size:1.0625rem;color:var(--jb-text);">MyJobAgent</span>
       </div>
 
-      <span class="privacy-badge" aria-label="Confidentialité : tout reste sur ta machine">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        100 % local — rien n'est envoyé
-      </span>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span class="privacy-badge" data-i18n="header.privacy">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          100% local — nothing is sent
+        </span>
+
+        <!-- Language switcher -->
+        <div id="lang-switcher" role="group" aria-label="Language / Langue" style="display:flex;gap:2px;border:1px solid var(--jb-border);border-radius:999px;padding:2px;background:var(--jb-surface-alt);">
+          <button id="lang-en" type="button" aria-label="Switch to English" aria-pressed="true"
+            onclick="window.__setLang('en')"
+            style="padding:0.2rem 0.6rem;border:none;border-radius:999px;font-size:0.75rem;font-weight:600;cursor:pointer;background:var(--jb-primary);color:white;transition:background 0.15s,color 0.15s;">
+            EN
+          </button>
+          <button id="lang-fr" type="button" aria-label="Passer en français" aria-pressed="false"
+            onclick="window.__setLang('fr')"
+            style="padding:0.2rem 0.6rem;border:none;border-radius:999px;font-size:0.75rem;font-weight:600;cursor:pointer;background:transparent;color:var(--jb-text-muted);transition:background 0.15s,color 0.15s;">
+            FR
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -37,29 +53,29 @@ import Layout from '../layouts/Layout.astro';
       <div style="position:absolute;top:-4rem;right:-4rem;width:22rem;height:22rem;background:radial-gradient(circle,rgba(46,107,255,.15) 0%,transparent 70%);pointer-events:none;" aria-hidden="true"></div>
 
       <div style="position:relative;max-width:1100px;margin:0 auto;padding:4rem 1.25rem 3.5rem;text-align:center;">
-        <p style="display:inline-block;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--jb-accent-text);background:var(--jb-accent-bg);border-radius:999px;padding:0.25rem 0.875rem;margin-bottom:1.25rem;">
-          Agent IA local · Open Source
+        <p style="display:inline-block;font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--jb-accent-text);background:var(--jb-accent-bg);border-radius:999px;padding:0.25rem 0.875rem;margin-bottom:1.25rem;" data-i18n="hero.badge">
+          Local AI Agent · Open Source
         </p>
 
-        <h1 id="hero-title" style="font-size:clamp(2rem,5vw,3.25rem);font-weight:700;line-height:1.15;color:var(--jb-text);max-width:680px;margin:0 auto 1.25rem;">
-          Décris ton job idéal une fois.<br>
-          <span style="background:var(--jb-beam);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Ton agent le cherche en local</span><br>
-          et t'explique chaque score.
+        <h1 id="hero-title" style="font-size:clamp(2rem,5vw,3.25rem);font-weight:700;line-height:1.15;color:var(--jb-text);max-width:680px;margin:0 auto 1.25rem;" data-i18n="hero.title">
+          Describe your ideal job once.<br>
+          <span style="background:var(--jb-beam);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" data-i18n="hero.title.highlight">Your agent searches locally</span><br>
+          and explains every score.
         </h1>
 
-        <p style="font-size:1.0625rem;color:var(--jb-text-muted);max-width:520px;margin:0 auto 2rem;line-height:1.65;">
-          MyJobAgent scanne les plateformes d'emploi avec un LLM local,
-          score chaque offre sur 100 points, et génère un tableau de bord privé — sans envoyer tes données nulle part.
+        <p style="font-size:1.0625rem;color:var(--jb-text-muted);max-width:520px;margin:0 auto 2rem;line-height:1.65;" data-i18n="hero.subtitle">
+          MyJobAgent scans job platforms with a local LLM,
+          scores each listing out of 100, and generates a private dashboard — without sending your data anywhere.
         </p>
 
         <div style="display:flex;flex-wrap:wrap;gap:0.875rem;justify-content:center;align-items:center;">
-          <a href="#wizard" class="jb-btn-primary" style="font-size:1rem;padding:0.75rem 2rem;">
+          <a href="#wizard" class="jb-btn-primary" style="font-size:1rem;padding:0.75rem 2rem;" data-i18n="hero.cta.create">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            Créer mon agent
+            Create my agent
           </a>
-          <a href="https://github.com" class="jb-btn-secondary" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com" class="jb-btn-secondary" target="_blank" rel="noopener noreferrer" data-i18n="hero.cta.github">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-            Voir le code
+            View source
           </a>
         </div>
 
@@ -69,22 +85,22 @@ import Layout from '../layouts/Layout.astro';
             <div style="width:2.25rem;height:2.25rem;background:var(--jb-primary-soft);border-radius:var(--jb-radius-input);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;">
               <span style="color:var(--jb-primary);font-weight:700;font-size:0.9375rem;">1</span>
             </div>
-            <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;">Configure ton profil</h3>
-            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;">Rôles, stack, lieu, contrat, salaire min. — tout dans un formulaire guidé.</p>
+            <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;" data-i18n="hero.step1.title">Configure your profile</h3>
+            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;" data-i18n="hero.step1.desc">Roles, stack, location, contract, min salary — all in a guided form.</p>
           </div>
           <div class="jb-card" style="padding:1.25rem;">
             <div style="width:2.25rem;height:2.25rem;background:var(--jb-accent-bg);border-radius:var(--jb-radius-input);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;">
               <span style="color:var(--jb-accent-text);font-weight:700;font-size:0.9375rem;">2</span>
             </div>
-            <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;">Lance l'agent en local</h3>
-            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;">Télécharge ta config, exécute <code style="font-family:monospace;font-size:0.75rem;background:var(--jb-surface-alt);padding:0.1em 0.3em;border-radius:4px;">mja run</code>. L'agent scanne pour toi.</p>
+            <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;" data-i18n="hero.step2.title">Run the agent locally</h3>
+            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;" data-i18n="hero.step2.desc">Download your config, run <code style="font-family:monospace;font-size:0.75rem;background:var(--jb-surface-alt);padding:0.1em 0.3em;border-radius:4px;">mja run</code>. The agent scans for you.</p>
           </div>
           <div class="jb-card" style="padding:1.25rem;">
             <div style="width:2.25rem;height:2.25rem;background:var(--jb-signal);border-radius:var(--jb-radius-input);display:flex;align-items:center;justify-content:center;margin-bottom:0.875rem;">
               <span style="color:var(--jb-signal-text);font-weight:700;font-size:0.9375rem;">3</span>
             </div>
-            <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;">Explore les matches</h3>
-            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;">Tableau de bord local avec score détaillé — jamais envoyé nulle part.</p>
+            <h3 style="font-size:0.9375rem;font-weight:600;color:var(--jb-text);margin-bottom:0.375rem;" data-i18n="hero.step3.title">Browse the matches</h3>
+            <p style="font-size:0.8125rem;color:var(--jb-text-muted);line-height:1.55;" data-i18n="hero.step3.desc">Local dashboard with detailed score — never sent anywhere.</p>
           </div>
         </div>
       </div>
@@ -93,22 +109,22 @@ import Layout from '../layouts/Layout.astro';
     <!-- ===================== WIZARD ===================== -->
     <section id="wizard" aria-labelledby="wizard-title" style="max-width:1100px;margin:0 auto;padding:3rem 1.25rem 5rem;">
       <div style="text-align:center;margin-bottom:2.5rem;">
-        <h2 id="wizard-title" style="font-size:1.875rem;font-weight:700;color:var(--jb-text);margin-bottom:0.625rem;">Créer ta configuration</h2>
-        <p style="color:var(--jb-text-muted);font-size:0.9375rem;">Complète les étapes ci-dessous. Ta config est générée dans ton navigateur, rien n'est envoyé.</p>
+        <h2 id="wizard-title" style="font-size:1.875rem;font-weight:700;color:var(--jb-text);margin-bottom:0.625rem;" data-i18n="wizard.title">Create your configuration</h2>
+        <p style="color:var(--jb-text-muted);font-size:0.9375rem;" data-i18n="wizard.subtitle">Complete the steps below. Your config is generated in your browser — nothing is sent.</p>
       </div>
 
       <!-- Main wizard container -->
       <div id="wizard-app" style="display:grid;grid-template-columns:1fr;gap:1.5rem;">
         <!-- Step navigation -->
-        <nav aria-label="Étapes du configurateur" style="display:flex;align-items:center;justify-content:center;gap:0.875rem;flex-wrap:wrap;">
+        <nav aria-label="Configurator steps" id="wizard-nav-aria" style="display:flex;align-items:center;justify-content:center;gap:0.875rem;flex-wrap:wrap;">
           <button class="step-btn active" data-step="0" aria-current="step" style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:var(--jb-radius-pill);border:1px solid var(--jb-primary);background:var(--jb-primary-soft);color:var(--jb-primary);font-weight:600;font-size:0.8125rem;cursor:pointer;">
             <span class="step-num" style="width:1.25rem;height:1.25rem;background:var(--jb-primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6875rem;font-weight:700;">1</span>
-            Profil
+            <span data-i18n="step.profile">Profile</span>
           </button>
           <div style="width:1.5rem;height:1px;background:var(--jb-border);flex-shrink:0;" aria-hidden="true"></div>
           <button class="step-btn" data-step="1" style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:var(--jb-radius-pill);border:1px solid var(--jb-border);background:var(--jb-surface);color:var(--jb-text-muted);font-size:0.8125rem;cursor:pointer;">
             <span class="step-num" style="width:1.25rem;height:1.25rem;background:var(--jb-border);color:var(--jb-text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6875rem;font-weight:700;">2</span>
-            Recherche
+            <span data-i18n="step.search">Search</span>
           </button>
           <div style="width:1.5rem;height:1px;background:var(--jb-border);flex-shrink:0;" aria-hidden="true"></div>
           <button class="step-btn" data-step="2" style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:var(--jb-radius-pill);border:1px solid var(--jb-border);background:var(--jb-surface);color:var(--jb-text-muted);font-size:0.8125rem;cursor:pointer;">
@@ -118,12 +134,12 @@ import Layout from '../layouts/Layout.astro';
           <div style="width:1.5rem;height:1px;background:var(--jb-border);flex-shrink:0;" aria-hidden="true"></div>
           <button class="step-btn" data-step="3" style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:var(--jb-radius-pill);border:1px solid var(--jb-border);background:var(--jb-surface);color:var(--jb-text-muted);font-size:0.8125rem;cursor:pointer;">
             <span class="step-num" style="width:1.25rem;height:1.25rem;background:var(--jb-border);color:var(--jb-text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6875rem;font-weight:700;">4</span>
-            Sources
+            <span data-i18n="step.sources">Sources</span>
           </button>
           <div style="width:1.5rem;height:1px;background:var(--jb-border);flex-shrink:0;" aria-hidden="true"></div>
           <button class="step-btn" data-step="4" style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:var(--jb-radius-pill);border:1px solid var(--jb-border);background:var(--jb-surface);color:var(--jb-text-muted);font-size:0.8125rem;cursor:pointer;">
             <span class="step-num" style="width:1.25rem;height:1.25rem;background:var(--jb-border);color:var(--jb-text-muted);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6875rem;font-weight:700;">5</span>
-            Générer
+            <span data-i18n="step.generate">Generate</span>
           </button>
         </nav>
 
@@ -133,21 +149,21 @@ import Layout from '../layouts/Layout.astro';
           <!-- Form area -->
           <div id="wizard-form" class="jb-card" style="padding:1.75rem;">
 
-            <!-- === STEP 1: Profil === -->
+            <!-- === STEP 1: Profile === -->
             <div class="wizard-step" data-step="0">
-              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:1.5rem;">Ton profil de recherche</h3>
+              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:1.5rem;" data-i18n="profile.heading">Your search profile</h3>
 
               <div style="display:grid;gap:1.25rem;">
 
                 <!-- Roles -->
                 <div>
-                  <label class="jb-label" for="roles-input">Rôles recherchés <span style="color:var(--jb-danger)">*</span></label>
+                  <label class="jb-label" for="roles-input"><span data-i18n="profile.roles.label">Target roles</span> <span style="color:var(--jb-danger)">*</span></label>
                   <div id="roles-tags" style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0.5rem;" aria-live="polite"></div>
                   <div style="display:flex;gap:0.5rem;">
-                    <input class="jb-input" id="roles-input" type="text" placeholder="Ex : Senior Backend Engineer — Entrée pour ajouter" aria-describedby="roles-hint" style="flex:1;" />
-                    <button type="button" id="roles-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);">+ Ajouter</button>
+                    <input class="jb-input" id="roles-input" type="text" data-i18n-placeholder="profile.roles.placeholder" placeholder="E.g. Senior Backend Engineer — Enter to add" aria-describedby="roles-hint" style="flex:1;" />
+                    <button type="button" id="roles-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);" data-i18n="btn.add">+ Add</button>
                   </div>
-                  <p id="roles-hint" style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:0.375rem;">Suggestions : Senior Backend Engineer · Tech Lead · Backend Architect · Fractional CTO</p>
+                  <p id="roles-hint" style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:0.375rem;" data-i18n="profile.roles.hint">Suggestions: Senior Backend Engineer · Tech Lead · Backend Architect · Fractional CTO</p>
                   <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-top:0.5rem;" aria-hidden="true">
                     <button type="button" class="suggestion-btn" data-target="roles" data-value="Senior Backend Engineer" style="font-size:0.6875rem;padding:0.15rem 0.5rem;border:1px solid var(--jb-border);border-radius:999px;background:var(--jb-surface-alt);color:var(--jb-text-muted);cursor:pointer;">Senior Backend Engineer</button>
                     <button type="button" class="suggestion-btn" data-target="roles" data-value="Tech Lead Backend" style="font-size:0.6875rem;padding:0.15rem 0.5rem;border:1px solid var(--jb-border);border-radius:999px;background:var(--jb-surface-alt);color:var(--jb-text-muted);cursor:pointer;">Tech Lead Backend</button>
@@ -159,11 +175,11 @@ import Layout from '../layouts/Layout.astro';
 
                 <!-- Stack core -->
                 <div>
-                  <label class="jb-label" for="stack-core-input">Stack indispensable (must-have)</label>
+                  <label class="jb-label" for="stack-core-input" data-i18n="profile.stackcore.label">Core stack (must-have)</label>
                   <div id="stack-core-tags" style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0.5rem;" aria-live="polite"></div>
                   <div style="display:flex;gap:0.5rem;">
-                    <input class="jb-input" id="stack-core-input" type="text" placeholder="Ex : Node.js, TypeScript…" style="flex:1;" />
-                    <button type="button" id="stack-core-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);">+ Ajouter</button>
+                    <input class="jb-input" id="stack-core-input" type="text" data-i18n-placeholder="profile.stackcore.placeholder" placeholder="E.g. Node.js, TypeScript…" style="flex:1;" />
+                    <button type="button" id="stack-core-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);" data-i18n="btn.add">+ Add</button>
                   </div>
                   <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-top:0.5rem;" aria-hidden="true">
                     <button type="button" class="suggestion-btn" data-target="stack-core" data-value="Node.js" style="font-size:0.6875rem;padding:0.15rem 0.5rem;border:1px solid var(--jb-border);border-radius:999px;background:var(--jb-surface-alt);color:var(--jb-text-muted);cursor:pointer;">Node.js</button>
@@ -176,31 +192,31 @@ import Layout from '../layouts/Layout.astro';
 
                 <!-- Stack nice -->
                 <div>
-                  <label class="jb-label" for="stack-nice-input">Stack nice-to-have (bonus)</label>
+                  <label class="jb-label" for="stack-nice-input" data-i18n="profile.stacknice.label">Nice-to-have stack (bonus)</label>
                   <div id="stack-nice-tags" style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0.5rem;" aria-live="polite"></div>
                   <div style="display:flex;gap:0.5rem;">
-                    <input class="jb-input" id="stack-nice-input" type="text" placeholder="Ex : Docker, Kubernetes, MongoDB…" style="flex:1;" />
-                    <button type="button" id="stack-nice-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);">+ Ajouter</button>
+                    <input class="jb-input" id="stack-nice-input" type="text" data-i18n-placeholder="profile.stacknice.placeholder" placeholder="E.g. Docker, Kubernetes, MongoDB…" style="flex:1;" />
+                    <button type="button" id="stack-nice-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);" data-i18n="btn.add">+ Add</button>
                   </div>
                 </div>
 
                 <!-- Exclusions -->
                 <div>
-                  <label class="jb-label" for="exclusions-input">Exclusions (hard stop)</label>
+                  <label class="jb-label" for="exclusions-input" data-i18n="profile.exclusions.label">Exclusions (hard stop)</label>
                   <div id="exclusions-tags" style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0.5rem;" aria-live="polite"></div>
                   <div style="display:flex;gap:0.5rem;">
-                    <input class="jb-input" id="exclusions-input" type="text" placeholder="Ex : PHP, on-site only…" style="flex:1;" />
-                    <button type="button" id="exclusions-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);">+ Ajouter</button>
+                    <input class="jb-input" id="exclusions-input" type="text" data-i18n-placeholder="profile.exclusions.placeholder" placeholder="E.g. PHP, on-site only…" style="flex:1;" />
+                    <button type="button" id="exclusions-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);" data-i18n="btn.add">+ Add</button>
                   </div>
                 </div>
 
                 <!-- Geography -->
                 <div>
-                  <label class="jb-label" for="geography-input">Lieux / Géographie</label>
+                  <label class="jb-label" for="geography-input" data-i18n="profile.geography.label">Location / Geography</label>
                   <div id="geography-tags" style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0.5rem;" aria-live="polite"></div>
                   <div style="display:flex;gap:0.5rem;">
-                    <input class="jb-input" id="geography-input" type="text" placeholder="Ex : Nice, Remote, Bordeaux…" style="flex:1;" />
-                    <button type="button" id="geography-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);">+ Ajouter</button>
+                    <input class="jb-input" id="geography-input" type="text" data-i18n-placeholder="profile.geography.placeholder" placeholder="E.g. Nice, Remote, Bordeaux…" style="flex:1;" />
+                    <button type="button" id="geography-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);" data-i18n="btn.add">+ Add</button>
                   </div>
                   <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-top:0.5rem;" aria-hidden="true">
                     <button type="button" class="suggestion-btn" data-target="geography" data-value="Remote" style="font-size:0.6875rem;padding:0.15rem 0.5rem;border:1px solid var(--jb-border);border-radius:999px;background:var(--jb-surface-alt);color:var(--jb-text-muted);cursor:pointer;">Remote</button>
@@ -214,7 +230,7 @@ import Layout from '../layouts/Layout.astro';
                 <!-- Contract types -->
                 <div>
                   <fieldset style="border:none;padding:0;margin:0;">
-                    <legend class="jb-label">Types de contrat</legend>
+                    <legend class="jb-label" data-i18n="profile.contract.legend">Contract types</legend>
                     <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:0.5rem;">
                       <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.875rem;">
                         <input type="checkbox" id="ct-cdi" data-contract="CDI" class="contract-cb" style="accent-color:var(--jb-primary);width:1rem;height:1rem;" />
@@ -239,73 +255,73 @@ import Layout from '../layouts/Layout.astro';
                 <!-- Seniority -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                   <div>
-                    <label class="jb-label" for="seniority-select">Séniorité</label>
+                    <label class="jb-label" for="seniority-select" data-i18n="profile.seniority.label">Seniority</label>
                     <select id="seniority-select" class="jb-input" style="cursor:pointer;">
                       <option value="Junior">Junior</option>
-                      <option value="Mid" >Mid</option>
+                      <option value="Mid">Mid</option>
                       <option value="Senior" selected>Senior</option>
                       <option value="Staff">Staff</option>
                       <option value="Principal">Principal</option>
                     </select>
                   </div>
                   <div>
-                    <label class="jb-label" for="years-exp">Années d'exp. (optionnel)</label>
-                    <input class="jb-input" id="years-exp" type="number" min="0" max="40" placeholder="Ex : 8" />
+                    <label class="jb-label" for="years-exp" data-i18n="profile.years.label">Years of exp. (optional)</label>
+                    <input class="jb-input" id="years-exp" type="number" min="0" max="40" data-i18n-placeholder="profile.years.placeholder" placeholder="E.g. 8" />
                   </div>
                 </div>
 
                 <!-- Salary / TJM -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                   <div>
-                    <label class="jb-label" for="min-salary">Salaire min CDI (€/an, optionnel)</label>
-                    <input class="jb-input" id="min-salary" type="number" min="0" step="1000" placeholder="Ex : 65000" />
+                    <label class="jb-label" for="min-salary" data-i18n="profile.salary.label">Min CDI salary (€/year, optional)</label>
+                    <input class="jb-input" id="min-salary" type="number" min="0" step="1000" data-i18n-placeholder="profile.salary.placeholder" placeholder="E.g. 65000" />
                   </div>
                   <div>
-                    <label class="jb-label" for="min-tjm">TJM min freelance (€/jour, optionnel)</label>
-                    <input class="jb-input" id="min-tjm" type="number" min="0" step="50" placeholder="Ex : 600" />
+                    <label class="jb-label" for="min-tjm" data-i18n="profile.tjm.label">Min daily rate (€/day, optional)</label>
+                    <input class="jb-input" id="min-tjm" type="number" min="0" step="50" data-i18n-placeholder="profile.tjm.placeholder" placeholder="E.g. 600" />
                   </div>
                 </div>
 
               </div>
 
               <div style="display:flex;justify-content:flex-end;margin-top:2rem;">
-                <button type="button" class="jb-btn-primary next-step" data-next="1">
-                  Suivant : Recherche
+                <button type="button" class="jb-btn-primary next-step" data-next="1" data-i18n="btn.next.search">
+                  Next: Search
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
             </div>
 
-            <!-- === STEP 2: Recherche === -->
+            <!-- === STEP 2: Search === -->
             <div class="wizard-step" data-step="1" style="display:none;">
-              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:1.5rem;">Paramètres de recherche</h3>
+              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:1.5rem;" data-i18n="search.heading">Search parameters</h3>
 
               <div style="display:grid;gap:1.5rem;">
 
                 <!-- Search modes -->
                 <div>
                   <fieldset style="border:none;padding:0;margin:0;">
-                    <legend class="jb-label">Modes de recherche</legend>
+                    <legend class="jb-label" data-i18n="search.modes.legend">Search modes</legend>
                     <div style="display:grid;gap:0.625rem;margin-top:0.5rem;">
                       <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;padding:0.75rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);">
                         <input type="checkbox" id="mode-platform" data-mode="PLATFORM" class="mode-cb" checked style="accent-color:var(--jb-primary);width:1rem;height:1rem;margin-top:0.125rem;flex-shrink:0;" />
                         <div>
                           <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">PLATFORM</div>
-                          <div style="font-size:0.75rem;color:var(--jb-text-muted);">Recherche ciblée sur les plateformes d'offres (WelcomeToTheJungle, Free-Work, Malt…)</div>
+                          <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="search.mode.platform.desc">Targeted search on job platforms (WelcomeToTheJungle, Free-Work, Malt…)</div>
                         </div>
                       </label>
                       <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;padding:0.75rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);">
                         <input type="checkbox" id="mode-careers" data-mode="CAREERS" class="mode-cb" checked style="accent-color:var(--jb-primary);width:1rem;height:1rem;margin-top:0.125rem;flex-shrink:0;" />
                         <div>
                           <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">CAREERS</div>
-                          <div style="font-size:0.75rem;color:var(--jb-text-muted);">Pages carrières des entreprises directement (recrutement Node.js Nice)</div>
+                          <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="search.mode.careers.desc">Company career pages directly (Node.js hiring Nice)</div>
                         </div>
                       </label>
                       <label style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;padding:0.75rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);">
                         <input type="checkbox" id="mode-linkedin" data-mode="LINKEDIN" class="mode-cb" style="accent-color:var(--jb-primary);width:1rem;height:1rem;margin-top:0.125rem;flex-shrink:0;" />
                         <div>
                           <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">LINKEDIN</div>
-                          <div style="font-size:0.75rem;color:var(--jb-text-muted);">Recherche sur LinkedIn Jobs (peut être bloqué selon les CGU)</div>
+                          <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="search.mode.linkedin.desc">Search on LinkedIn Jobs (may be blocked depending on ToS)</div>
                         </div>
                       </label>
                     </div>
@@ -314,11 +330,11 @@ import Layout from '../layouts/Layout.astro';
 
                 <!-- Platforms -->
                 <div>
-                  <label class="jb-label" for="platforms-input">Plateformes cibles</label>
+                  <label class="jb-label" for="platforms-input" data-i18n="search.platforms.label">Target platforms</label>
                   <div id="platforms-tags" style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-bottom:0.5rem;" aria-live="polite"></div>
                   <div style="display:flex;gap:0.5rem;">
-                    <input class="jb-input" id="platforms-input" type="text" placeholder="Ex : talent.io" style="flex:1;" />
-                    <button type="button" id="platforms-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);">+ Ajouter</button>
+                    <input class="jb-input" id="platforms-input" type="text" data-i18n-placeholder="search.platforms.placeholder" placeholder="E.g. talent.io" style="flex:1;" />
+                    <button type="button" id="platforms-add" class="jb-btn-secondary" style="white-space:nowrap;padding:0.5rem 0.875rem;border-radius:var(--jb-radius-input);" data-i18n="btn.add">+ Add</button>
                   </div>
                   <div style="display:flex;flex-wrap:wrap;gap:0.375rem;margin-top:0.5rem;" aria-hidden="true">
                     <button type="button" class="suggestion-btn" data-target="platforms" data-value="welcometothejungle.com" style="font-size:0.6875rem;padding:0.15rem 0.5rem;border:1px solid var(--jb-border);border-radius:999px;background:var(--jb-surface-alt);color:var(--jb-text-muted);cursor:pointer;">welcometothejungle.com</button>
@@ -331,27 +347,27 @@ import Layout from '../layouts/Layout.astro';
 
                 <!-- Score threshold -->
                 <div>
-                  <label class="jb-label" for="score-threshold">Score minimum (0–100) : <strong id="threshold-display">50</strong></label>
+                  <label class="jb-label" for="score-threshold"><span data-i18n="search.threshold.label">Minimum score (0–100):</span> <strong id="threshold-display">50</strong></label>
                   <input type="range" id="score-threshold" min="0" max="100" value="50" step="5"
                     style="width:100%;accent-color:var(--jb-primary);cursor:pointer;"
                     aria-describedby="threshold-hint"
                   />
                   <div id="threshold-hint" style="display:flex;justify-content:space-between;font-size:0.6875rem;color:var(--jb-text-muted);margin-top:0.25rem;">
-                    <span>0 — tout voir</span>
-                    <span>50 — recommandé</span>
-                    <span>100 — exact</span>
+                    <span data-i18n="search.threshold.low">0 — see all</span>
+                    <span data-i18n="search.threshold.mid">50 — recommended</span>
+                    <span data-i18n="search.threshold.high">100 — exact</span>
                   </div>
                 </div>
 
               </div>
 
               <div style="display:flex;justify-content:space-between;margin-top:2rem;">
-                <button type="button" class="jb-btn-secondary prev-step" data-prev="0">
+                <button type="button" class="jb-btn-secondary prev-step" data-prev="0" data-i18n="btn.back">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-                  Retour
+                  Back
                 </button>
-                <button type="button" class="jb-btn-primary next-step" data-next="2">
-                  Suivant : LLM
+                <button type="button" class="jb-btn-primary next-step" data-next="2" data-i18n="btn.next.llm">
+                  Next: LLM
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
@@ -359,15 +375,15 @@ import Layout from '../layouts/Layout.astro';
 
             <!-- === STEP 3: LLM === -->
             <div class="wizard-step" data-step="2" style="display:none;">
-              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:0.5rem;">Modèle de langage (LLM)</h3>
-              <p style="font-size:0.8125rem;color:var(--jb-text-muted);margin-bottom:1.5rem;">L'agent utilise ce LLM en local pour comprendre et scorer les offres.</p>
+              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:0.5rem;" data-i18n="llm.heading">Language model (LLM)</h3>
+              <p style="font-size:0.8125rem;color:var(--jb-text-muted);margin-bottom:1.5rem;" data-i18n="llm.subtitle">The agent uses this LLM locally to understand and score job listings.</p>
 
-              <!-- Privacy badge in LLM step (spec §8.8) -->
+              <!-- Privacy badge in LLM step -->
               <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;background:var(--jb-accent-bg);border:1px solid var(--jb-accent);border-radius:var(--jb-radius-input);margin-bottom:1.5rem;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--jb-accent-text)" stroke-width="2.5" aria-hidden="true" style="flex-shrink:0;margin-top:0.125rem;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <div>
-                  <p style="font-size:0.8125rem;font-weight:600;color:var(--jb-accent-text);margin:0 0 0.25rem;">Ta clé API se configure en local — jamais ici.</p>
-                  <p style="font-size:0.75rem;color:var(--jb-accent-text);margin:0;">Utilise la variable d'environnement <code style="font-family:monospace;background:var(--jb-accent-bg);padding:0.05em 0.3em;border-radius:3px;">JOBHUNT_LLM_API_KEY</code> ou le trousseau système. Ta clé ne transite jamais par nos serveurs.</p>
+                  <p style="font-size:0.8125rem;font-weight:600;color:var(--jb-accent-text);margin:0 0 0.25rem;" data-i18n="llm.key.title">Your API key is configured locally — never here.</p>
+                  <p style="font-size:0.75rem;color:var(--jb-accent-text);margin:0;" data-i18n="llm.key.desc">Use the environment variable <code style="font-family:monospace;background:var(--jb-accent-bg);padding:0.05em 0.3em;border-radius:3px;">JOBHUNT_LLM_API_KEY</code> or the system keychain. Your key never passes through our servers.</p>
                 </div>
               </div>
 
@@ -376,15 +392,15 @@ import Layout from '../layouts/Layout.astro';
                 <!-- Provider cards -->
                 <div>
                   <fieldset style="border:none;padding:0;margin:0;">
-                    <legend class="jb-label">Fournisseur LLM</legend>
+                    <legend class="jb-label" data-i18n="llm.provider.legend">LLM Provider</legend>
                     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.625rem;margin-top:0.5rem;">
 
                       <label class="llm-card-label" style="cursor:pointer;">
                         <input type="radio" name="llm-provider" value="ollama" checked class="llm-provider-radio" style="position:absolute;opacity:0;pointer-events:none;" />
                         <div class="llm-card active" data-provider="ollama" style="padding:0.875rem;border:2px solid var(--jb-primary);border-radius:var(--jb-radius-input);background:var(--jb-primary-soft);">
                           <div style="font-weight:700;font-size:0.875rem;color:var(--jb-primary);margin-bottom:0.25rem;">Ollama</div>
-                          <div style="font-size:0.6875rem;color:var(--jb-text-muted);">Recommandé — 100% local</div>
-                          <div style="margin-top:0.375rem;font-size:0.625rem;background:var(--jb-primary);color:white;border-radius:999px;padding:0.1em 0.5em;display:inline-block;">Pas de clé</div>
+                          <div style="font-size:0.6875rem;color:var(--jb-text-muted);" data-i18n="llm.ollama.desc">Recommended — 100% local</div>
+                          <div style="margin-top:0.375rem;font-size:0.625rem;background:var(--jb-primary);color:white;border-radius:999px;padding:0.1em 0.5em;display:inline-block;" data-i18n="llm.nokey">No key</div>
                         </div>
                       </label>
 
@@ -392,7 +408,7 @@ import Layout from '../layouts/Layout.astro';
                         <input type="radio" name="llm-provider" value="lmstudio" class="llm-provider-radio" style="position:absolute;opacity:0;pointer-events:none;" />
                         <div class="llm-card" data-provider="lmstudio" style="padding:0.875rem;border:2px solid var(--jb-border);border-radius:var(--jb-radius-input);background:var(--jb-surface);">
                           <div style="font-weight:700;font-size:0.875rem;color:var(--jb-text);margin-bottom:0.25rem;">LM Studio</div>
-                          <div style="font-size:0.6875rem;color:var(--jb-text-muted);">Local, interface graphique</div>
+                          <div style="font-size:0.6875rem;color:var(--jb-text-muted);" data-i18n="llm.lmstudio.desc">Local, graphical UI</div>
                         </div>
                       </label>
 
@@ -424,7 +440,7 @@ import Layout from '../layouts/Layout.astro';
                         <input type="radio" name="llm-provider" value="groq" class="llm-provider-radio" style="position:absolute;opacity:0;pointer-events:none;" />
                         <div class="llm-card" data-provider="groq" style="padding:0.875rem;border:2px solid var(--jb-border);border-radius:var(--jb-radius-input);background:var(--jb-surface);">
                           <div style="font-weight:700;font-size:0.875rem;color:var(--jb-text);margin-bottom:0.25rem;">Groq</div>
-                          <div style="font-size:0.6875rem;color:var(--jb-text-muted);">Très rapide, gratuit</div>
+                          <div style="font-size:0.6875rem;color:var(--jb-text-muted);" data-i18n="llm.groq.desc">Very fast, free tier</div>
                         </div>
                       </label>
 
@@ -434,33 +450,33 @@ import Layout from '../layouts/Layout.astro';
 
                 <!-- Model name -->
                 <div>
-                  <label class="jb-label" for="llm-model">Nom du modèle</label>
+                  <label class="jb-label" for="llm-model" data-i18n="llm.model.label">Model name</label>
                   <input class="jb-input" id="llm-model" type="text" value="gemma4:e2b" placeholder="gemma4:e2b" />
-                  <p id="llm-model-hint" style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:0.375rem;">Pour Ollama : <code style="font-family:monospace;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">gemma4:e2b</code> (léger), <code style="font-family:monospace;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">gemma4:e4b</code>, <code style="font-family:monospace;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">qwen2.5:7b</code></p>
+                  <p id="llm-model-hint" style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:0.375rem;" data-i18n="llm.model.hint">For Ollama: <code style="font-family:monospace;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">gemma4:e2b</code> (lightweight), <code style="font-family:monospace;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">gemma4:e4b</code>, <code style="font-family:monospace;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">qwen2.5:7b</code></p>
                 </div>
 
                 <!-- Base URL (advanced) -->
                 <details style="border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);overflow:hidden;">
-                  <summary style="padding:0.75rem;cursor:pointer;font-size:0.8125rem;font-weight:600;color:var(--jb-text);list-style:none;display:flex;align-items:center;justify-content:space-between;">
-                    Paramètres avancés (URL de base)
+                  <summary style="padding:0.75rem;cursor:pointer;font-size:0.8125rem;font-weight:600;color:var(--jb-text);list-style:none;display:flex;align-items:center;justify-content:space-between;" data-i18n="llm.advanced.summary">
+                    Advanced settings (base URL)
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                   </summary>
                   <div style="padding:0.75rem;border-top:1px solid var(--jb-border);">
-                    <label class="jb-label" for="llm-base-url">URL de base du LLM</label>
+                    <label class="jb-label" for="llm-base-url" data-i18n="llm.baseurl.label">LLM base URL</label>
                     <input class="jb-input" id="llm-base-url" type="url" value="http://localhost:11434" placeholder="http://localhost:11434" />
-                    <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:0.375rem;">Pour Ollama local : http://localhost:11434 · LM Studio : http://localhost:1234</p>
+                    <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:0.375rem;" data-i18n="llm.baseurl.hint">Ollama local: http://localhost:11434 · LM Studio: http://localhost:1234</p>
                   </div>
                 </details>
 
               </div>
 
               <div style="display:flex;justify-content:space-between;margin-top:2rem;">
-                <button type="button" class="jb-btn-secondary prev-step" data-prev="1">
+                <button type="button" class="jb-btn-secondary prev-step" data-prev="1" data-i18n="btn.back">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-                  Retour
+                  Back
                 </button>
-                <button type="button" class="jb-btn-primary next-step" data-next="3">
-                  Suivant : Sources
+                <button type="button" class="jb-btn-primary next-step" data-next="3" data-i18n="btn.next.sources">
+                  Next: Sources
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
@@ -468,40 +484,40 @@ import Layout from '../layouts/Layout.astro';
 
             <!-- === STEP 4: Sources === -->
             <div class="wizard-step" data-step="3" style="display:none;">
-              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:1.5rem;">Sources à activer</h3>
+              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:1.5rem;" data-i18n="sources.heading">Sources to enable</h3>
 
               <div style="display:grid;gap:0.875rem;">
 
                 <label style="display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);cursor:pointer;gap:1rem;">
                   <div>
                     <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">France Travail</div>
-                    <div style="font-size:0.75rem;color:var(--jb-text-muted);">Pôle Emploi — offres publiques, large couverture CDI</div>
+                    <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="sources.ft.desc">Pôle Emploi — public listings, broad CDI coverage</div>
                   </div>
-                  <input type="checkbox" id="src-france-travail" class="jb-toggle" checked aria-label="Activer France Travail" />
+                  <input type="checkbox" id="src-france-travail" class="jb-toggle" checked data-i18n-aria="sources.ft.aria" aria-label="Enable France Travail" />
                 </label>
 
                 <label style="display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);cursor:pointer;gap:1rem;">
                   <div>
-                    <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">Flux RSS de recrutement</div>
-                    <div style="font-size:0.75rem;color:var(--jb-text-muted);">Officiel & stable, souvent avec le texte complet — pas de scraping. Flux configurables ensuite dans le tableau de bord local.</div>
+                    <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);" data-i18n="sources.rss.title">RSS job feeds</div>
+                    <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="sources.rss.desc">Official &amp; stable, often with full text — no scraping. Configurable feeds in the local dashboard.</div>
                   </div>
-                  <input type="checkbox" id="src-rss" class="jb-toggle" checked aria-label="Activer les flux RSS" />
+                  <input type="checkbox" id="src-rss" class="jb-toggle" checked data-i18n-aria="sources.rss.aria" aria-label="Enable RSS feeds" />
                 </label>
 
                 <label style="display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);cursor:pointer;gap:1rem;">
                   <div>
                     <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">Welcome to the Jungle</div>
-                    <div style="font-size:0.75rem;color:var(--jb-text-muted);">Startups & scale-ups — très bon pour les profils tech</div>
+                    <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="sources.wttj.desc">Startups &amp; scale-ups — great for tech profiles</div>
                   </div>
-                  <input type="checkbox" id="src-wttj" class="jb-toggle" checked aria-label="Activer Welcome to the Jungle" />
+                  <input type="checkbox" id="src-wttj" class="jb-toggle" checked data-i18n-aria="sources.wttj.aria" aria-label="Enable Welcome to the Jungle" />
                 </label>
 
                 <label style="display:flex;align-items:center;justify-content:space-between;padding:1rem;border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);cursor:pointer;gap:1rem;">
                   <div>
                     <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">Indeed</div>
-                    <div style="font-size:0.75rem;color:var(--jb-text-muted);">Agrégateur généraliste, volume élevé</div>
+                    <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="sources.indeed.desc">General aggregator, high volume</div>
                   </div>
-                  <input type="checkbox" id="src-indeed" class="jb-toggle" aria-label="Activer Indeed" />
+                  <input type="checkbox" id="src-indeed" class="jb-toggle" data-i18n-aria="sources.indeed.aria" aria-label="Enable Indeed" />
                 </label>
 
                 <!-- LinkedIn - with disclaimer -->
@@ -509,13 +525,13 @@ import Layout from '../layouts/Layout.astro';
                   <label style="display:flex;align-items:center;justify-content:space-between;padding:1rem;cursor:pointer;gap:1rem;background:color-mix(in srgb, var(--jb-signal) 10%, var(--jb-surface));">
                     <div>
                       <div style="font-weight:600;font-size:0.875rem;color:var(--jb-text);">LinkedIn Jobs</div>
-                      <div style="font-size:0.75rem;color:var(--jb-text-muted);">Réseau professionnel — le scraping peut être bloqué</div>
+                      <div style="font-size:0.75rem;color:var(--jb-text-muted);" data-i18n="sources.linkedin.desc">Professional network — scraping may be blocked</div>
                     </div>
-                    <input type="checkbox" id="src-linkedin" class="jb-toggle" aria-label="Activer LinkedIn (risque CGU)" />
+                    <input type="checkbox" id="src-linkedin" class="jb-toggle" data-i18n-aria="sources.linkedin.aria" aria-label="Enable LinkedIn (ToS risk)" />
                   </label>
                   <div style="padding:0.625rem 1rem;background:color-mix(in srgb, var(--jb-signal) 15%, var(--jb-surface));border-top:1px solid var(--jb-signal);">
-                    <p style="font-size:0.75rem;color:var(--jb-signal-text);margin:0;">
-                      <strong>Attention :</strong> le scraping LinkedIn peut violer leurs CGU. Active cette option à tes risques et périls. Désactivé par défaut.
+                    <p style="font-size:0.75rem;color:var(--jb-signal-text);margin:0;" data-i18n="sources.linkedin.warning">
+                      <strong>Warning:</strong> LinkedIn scraping may violate their ToS. Enable this option at your own risk. Disabled by default.
                     </p>
                   </div>
                 </div>
@@ -523,12 +539,12 @@ import Layout from '../layouts/Layout.astro';
               </div>
 
               <div style="display:flex;justify-content:space-between;margin-top:2rem;">
-                <button type="button" class="jb-btn-secondary prev-step" data-prev="2">
+                <button type="button" class="jb-btn-secondary prev-step" data-prev="2" data-i18n="btn.back">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-                  Retour
+                  Back
                 </button>
-                <button type="button" class="jb-btn-primary next-step" data-next="4">
-                  Générer ma config
+                <button type="button" class="jb-btn-primary next-step" data-next="4" data-i18n="btn.generate">
+                  Generate my config
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </div>
@@ -536,27 +552,27 @@ import Layout from '../layouts/Layout.astro';
 
             <!-- === STEP 5: Generate === -->
             <div class="wizard-step" data-step="4" style="display:none;">
-              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:0.5rem;">Ta configuration est prête</h3>
-              <p style="font-size:0.8125rem;color:var(--jb-text-muted);margin-bottom:1.5rem;">Télécharge le fichier ou copie la commande pour lancer ton agent.</p>
+              <h3 style="font-size:1.125rem;font-weight:700;color:var(--jb-text);margin-bottom:0.5rem;" data-i18n="generate.heading">Your configuration is ready</h3>
+              <p style="font-size:0.8125rem;color:var(--jb-text-muted);margin-bottom:1.5rem;" data-i18n="generate.subtitle">Download the file or copy the command to launch your agent.</p>
 
               <!-- Privacy badge -->
               <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--jb-accent-bg);border:1px solid var(--jb-accent);border-radius:var(--jb-radius-input);margin-bottom:1.5rem;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--jb-accent-text)" stroke-width="2.5" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <p style="font-size:0.8125rem;color:var(--jb-accent-text);margin:0;">
-                  Ta config reste sur ta machine — rien n'est envoyé.
-                  <button id="show-json-toggle" type="button" style="background:none;border:none;color:var(--jb-primary);font-size:0.8125rem;cursor:pointer;text-decoration:underline;padding:0 0.25rem;">Voir ce qu'elle contient</button>
+                  <span data-i18n="generate.privacy">Your config stays on your machine — nothing is sent.</span>
+                  <button id="show-json-toggle" type="button" style="background:none;border:none;color:var(--jb-primary);font-size:0.8125rem;cursor:pointer;text-decoration:underline;padding:0 0.25rem;" data-i18n="generate.show.json">View what it contains</button>
                 </p>
               </div>
 
               <!-- Download button -->
-              <button type="button" id="download-config" class="jb-btn-primary" style="width:100%;justify-content:center;margin-bottom:1.25rem;font-size:1rem;padding:0.875rem;">
+              <button type="button" id="download-config" class="jb-btn-primary" style="width:100%;justify-content:center;margin-bottom:1.25rem;font-size:1rem;padding:0.875rem;" data-i18n="generate.download">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Télécharger jobhunt.config.json
+                Download jobhunt.config.json
               </button>
 
               <!-- OS-aware terminal instructions -->
               <div class="jb-card" style="padding:1.25rem;margin-bottom:1.25rem;">
-                <h4 style="font-size:0.875rem;font-weight:700;color:var(--jb-text);margin-bottom:1rem;">Lancer ton agent</h4>
+                <h4 style="font-size:0.875rem;font-weight:700;color:var(--jb-text);margin-bottom:1rem;" data-i18n="generate.launch.title">Launch your agent</h4>
 
                 <!-- OS Tabs -->
                 <div style="display:flex;gap:0.25rem;margin-bottom:1rem;border-bottom:1px solid var(--jb-border);">
@@ -565,18 +581,18 @@ import Layout from '../layouts/Layout.astro';
                   <button type="button" class="os-tab" data-os="windows" style="padding:0.375rem 0.875rem;font-size:0.8125rem;border:none;background:none;cursor:pointer;color:var(--jb-text-muted);border-bottom:2px solid transparent;">Windows</button>
                 </div>
 
-                <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-bottom:1rem;">
-                  Projet pas encore publié sur PyPI : on installe depuis GitHub. Prérequis :
+                <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-bottom:1rem;" data-i18n="generate.prereq">
+                  Not yet published on PyPI: install from GitHub. Requirements:
                   <a href="https://www.python.org/downloads/" target="_blank" rel="noopener" style="color:var(--jb-primary);">Python ≥ 3.11</a>,
-                  <a href="https://git-scm.com/downloads" target="_blank" rel="noopener" style="color:var(--jb-primary);">git</a> et
+                  <a href="https://git-scm.com/downloads" target="_blank" rel="noopener" style="color:var(--jb-primary);">git</a> and
                   <a href="https://ollama.com" target="_blank" rel="noopener" style="color:var(--jb-primary);">Ollama</a>.
                 </p>
 
                 <div id="os-mac" class="os-panel">
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (une fois)</span>
-                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[scrape]'\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.install">1. Install (once)</span>
+                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[scrape]'\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">git clone https://github.com/nathan-pichon/myjobagent.git
 cd myjobagent
@@ -587,17 +603,17 @@ ollama pull gemma4:e2b</code>
                   </div>
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer ta config</span>
-                      <button type="button" class="copy-cmd" data-cmd="mja init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.import">2. Import your config</span>
+                      <button type="button" class="copy-cmd" data-cmd="mja init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">mja init ~/Downloads/jobhunt.config.json</code>
                   </div>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">3. Lancer</span>
-                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.run">3. Run</span>
+                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor   # vérifie que tout est prêt
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor   # checks everything is ready
 mja run</code>
                   </div>
                 </div>
@@ -605,8 +621,8 @@ mja run</code>
                 <div id="os-linux" class="os-panel" style="display:none;">
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (une fois)</span>
-                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[scrape]'\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.install">1. Install (once)</span>
+                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython3 -m venv .venv && source .venv/bin/activate\npip install -e '.[scrape]'\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">git clone https://github.com/nathan-pichon/myjobagent.git
 cd myjobagent
@@ -617,17 +633,17 @@ ollama pull gemma4:e2b</code>
                   </div>
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer ta config</span>
-                      <button type="button" class="copy-cmd" data-cmd="mja init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.import">2. Import your config</span>
+                      <button type="button" class="copy-cmd" data-cmd="mja init ~/Downloads/jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">mja init ~/Downloads/jobhunt.config.json</code>
                   </div>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">3. Lancer</span>
-                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.run">3. Run</span>
+                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
-                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor   # vérifie que tout est prêt
+                    <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor
 mja run</code>
                   </div>
                 </div>
@@ -635,8 +651,8 @@ mja run</code>
                 <div id="os-windows" class="os-panel" style="display:none;">
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">1. Installer (PowerShell, une fois)</span>
-                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython -m venv .venv; .venv\\Scripts\\activate\npip install -e \".[scrape]\"\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.install.win">1. Install (PowerShell, once)</span>
+                      <button type="button" class="copy-cmd" data-cmd={"git clone https://github.com/nathan-pichon/myjobagent.git\ncd myjobagent\npython -m venv .venv; .venv\\Scripts\\activate\npip install -e \".[scrape]\"\nplaywright install chromium\nollama pull gemma4:e2b"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">git clone https://github.com/nathan-pichon/myjobagent.git
 cd myjobagent
@@ -647,42 +663,42 @@ ollama pull gemma4:e2b</code>
                   </div>
                   <div class="command-row" style="margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">2. Importer ta config</span>
-                      <button type="button" class="copy-cmd" data-cmd="mja init %USERPROFILE%\\Downloads\\jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.import">2. Import your config</span>
+                      <button type="button" class="copy-cmd" data-cmd="mja init %USERPROFILE%\\Downloads\\jobhunt.config.json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;">mja init %USERPROFILE%\Downloads\jobhunt.config.json</code>
                   </div>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
-                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">3. Lancer</span>
-                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.step.run">3. Run</span>
+                      <button type="button" class="copy-cmd" data-cmd={"mja doctor\nmja run"} style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.625rem 0.875rem;white-space:pre;line-height:1.6;">mja doctor
 mja run</code>
                   </div>
                 </div>
 
-                <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:1rem;">
-                  Quand la chasse est terminée, ton dashboard local s'ouvre automatiquement sur <code style="font-family:monospace;font-size:0.6875rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">http://localhost:4321</code>.
+                <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-top:1rem;" data-i18n="generate.dashboard.note">
+                  When the hunt is done, your local dashboard opens automatically at <code style="font-family:monospace;font-size:0.6875rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">http://localhost:4321</code>.
                 </p>
 
                 <div style="margin-top:1rem;padding:0.875rem 1rem;background:color-mix(in srgb, var(--jb-signal) 10%, var(--jb-surface));border:1px solid var(--jb-signal);border-radius:var(--jb-radius-input);">
-                  <p style="font-size:0.75rem;color:var(--jb-text);margin:0 0 0.5rem;font-weight:600;">↻ Relancer plus tard (nouveau terminal)</p>
-                  <p style="font-size:0.75rem;color:var(--jb-text-muted);margin:0 0 0.5rem;line-height:1.5;">
-                    La commande <code style="font-family:monospace;font-size:0.6875rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">mja</code> vit dans l'environnement du projet. Dans un nouveau terminal, réactive-le d'abord :
+                  <p style="font-size:0.75rem;color:var(--jb-text);margin:0 0 0.5rem;font-weight:600;" data-i18n="generate.rerun.title">↻ Run again later (new terminal)</p>
+                  <p style="font-size:0.75rem;color:var(--jb-text-muted);margin:0 0 0.5rem;line-height:1.5;" data-i18n="generate.rerun.desc">
+                    The <code style="font-family:monospace;font-size:0.6875rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">mja</code> command lives in the project virtual environment. In a new terminal, activate it first:
                   </p>
                   <div class="command-row">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;">
                       <span style="font-size:0.625rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">macOS / Linux</span>
-                      <button type="button" class="copy-cmd" data-cmd={"cd myjobagent\nsource .venv/bin/activate\nmja run"} style="font-size:0.625rem;padding:0.15rem 0.45rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                      <button type="button" class="copy-cmd" data-cmd={"cd myjobagent\nsource .venv/bin/activate\nmja run"} style="font-size:0.625rem;padding:0.15rem 0.45rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                     </div>
                     <code class="code-block" style="display:block;padding:0.5rem 0.75rem;white-space:pre;line-height:1.6;font-size:0.6875rem;">cd myjobagent
 source .venv/bin/activate
 mja run</code>
                   </div>
-                  <p style="font-size:0.6875rem;color:var(--jb-text-muted);margin:0.6rem 0 0;line-height:1.5;">
-                    Sur Windows : <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">.venv\Scripts\activate</code> à la place de la 2ᵉ ligne.
-                    <br/>Astuce : pour taper <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">mja</code> de n'importe où sans activer le venv, ajoute un alias dans ton shell —
+                  <p style="font-size:0.6875rem;color:var(--jb-text-muted);margin:0.6rem 0 0;line-height:1.5;" data-i18n="generate.rerun.windows">
+                    On Windows: <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">.venv\Scripts\activate</code> instead of line 2.
+                    <br/>Tip: to type <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">mja</code> from anywhere without activating the venv, add a shell alias —
                     <code style="font-family:monospace;font-size:0.625rem;background:var(--jb-surface-alt);padding:0.05em 0.3em;border-radius:3px;">alias mja="~/myjobagent/.venv/bin/mja"</code>.
                   </p>
                 </div>
@@ -690,32 +706,32 @@ mja run</code>
 
               <!-- Base64 variant (collapsible) -->
               <details style="border:1px solid var(--jb-border);border-radius:var(--jb-radius-input);overflow:hidden;margin-bottom:1.25rem;">
-                <summary style="padding:0.875rem 1rem;cursor:pointer;font-size:0.8125rem;font-weight:600;color:var(--jb-text);list-style:none;display:flex;align-items:center;justify-content:space-between;">
-                  Variante tout-en-un (sans téléchargement)
+                <summary style="padding:0.875rem 1rem;cursor:pointer;font-size:0.8125rem;font-weight:600;color:var(--jb-text);list-style:none;display:flex;align-items:center;justify-content:space-between;" data-i18n="generate.b64.summary">
+                  All-in-one variant (no download)
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                 </summary>
                 <div style="padding:1rem;border-top:1px solid var(--jb-border);">
-                  <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-bottom:0.75rem;">Colle directement ta config inline dans la commande (pratique pour config courte). Si ta config dépasse ~2 ko, préfère le fichier.</p>
+                  <p style="font-size:0.75rem;color:var(--jb-text-muted);margin-bottom:0.75rem;" data-i18n="generate.b64.desc">Paste your config inline into the command (handy for short configs). If your config exceeds ~2 KB, prefer the file.</p>
                   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.375rem;">
-                    <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;">Commande base64url</span>
-                    <button type="button" id="copy-b64-cmd" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+                    <span style="font-size:0.6875rem;font-weight:600;color:var(--jb-text-muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="generate.b64.label">base64url command</span>
+                    <button type="button" id="copy-b64-cmd" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
                   </div>
-                  <code id="b64-cmd-display" class="code-block" style="display:block;padding:0.625rem 0.875rem;word-break:break-all;font-size:0.6875rem;">mja init --b64 <em style="color:var(--jb-text-muted);">(génération en cours…)</em></code>
+                  <code id="b64-cmd-display" class="code-block" style="display:block;padding:0.625rem 0.875rem;word-break:break-all;font-size:0.6875rem;">mja init --b64 <em style="color:var(--jb-text-muted);" data-i18n="generate.b64.loading">(generating…)</em></code>
                 </div>
               </details>
 
               <!-- JSON preview -->
               <div id="json-preview-wrapper" style="display:none;margin-top:0.5rem;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-                  <span style="font-size:0.8125rem;font-weight:600;color:var(--jb-text);">Contenu de la config (JSON)</span>
-                  <button type="button" id="copy-json-btn" style="font-size:0.6875rem;padding:0.2rem 0.625rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier JSON</button>
+                  <span style="font-size:0.8125rem;font-weight:600;color:var(--jb-text);" data-i18n="generate.json.title">Config contents (JSON)</span>
+                  <button type="button" id="copy-json-btn" style="font-size:0.6875rem;padding:0.2rem 0.625rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="generate.json.copy">Copy JSON</button>
                 </div>
                 <pre id="json-preview" class="code-block" style="padding:1rem;overflow:auto;max-height:20rem;font-size:0.6875rem;line-height:1.65;white-space:pre;"></pre>
               </div>
 
-              <button type="button" class="jb-btn-secondary prev-step" data-prev="3" style="margin-top:1rem;">
+              <button type="button" class="jb-btn-secondary prev-step" data-prev="3" style="margin-top:1rem;" data-i18n="btn.back">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-                Retour
+                Back
               </button>
             </div>
 
@@ -724,8 +740,8 @@ mja run</code>
           <!-- Live JSON preview (desktop only) -->
           <div id="json-sidebar" class="jb-card" style="display:none;padding:1.25rem;height:fit-content;position:sticky;top:4.5rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.875rem;">
-              <span style="font-size:0.8125rem;font-weight:700;color:var(--jb-text);">Aperçu live</span>
-              <button type="button" id="sidebar-copy-json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;">Copier</button>
+              <span style="font-size:0.8125rem;font-weight:700;color:var(--jb-text);" data-i18n="sidebar.title">Live preview</span>
+              <button type="button" id="sidebar-copy-json" style="font-size:0.6875rem;padding:0.2rem 0.5rem;border:1px solid var(--jb-border);border-radius:4px;background:var(--jb-surface);color:var(--jb-text-muted);cursor:pointer;" data-i18n="btn.copy">Copy</button>
             </div>
             <pre id="sidebar-json" style="font-family:'JetBrains Mono','Fira Code',monospace;font-size:0.6875rem;line-height:1.6;color:var(--jb-text);overflow:auto;max-height:65vh;white-space:pre;margin:0;"></pre>
           </div>
@@ -737,13 +753,314 @@ mja run</code>
 
   <!-- ===================== FOOTER ===================== -->
   <footer style="border-top:1px solid var(--jb-border);padding:1.5rem 1.25rem;text-align:center;">
-    <p style="font-size:0.8125rem;color:var(--jb-text-muted);">
-      MyJobAgent — Open Source · Zéro analytics · Tout reste sur ta machine
+    <p style="font-size:0.8125rem;color:var(--jb-text-muted);" data-i18n="footer.text">
+      MyJobAgent — Open Source · Zero analytics · Everything stays on your machine
     </p>
   </footer>
 </Layout>
 
 <script>
+// ============================================================
+//  i18n — language switching (EN default, FR optional)
+// ============================================================
+const I18N = {
+  en: {
+    "header.privacy": "100% local — nothing is sent",
+    "hero.badge": "Local AI Agent · Open Source",
+    "hero.title": "Describe your ideal job once.\nYour agent searches locally\nand explains every score.",
+    "hero.title.highlight": "Your agent searches locally",
+    "hero.subtitle": "MyJobAgent scans job platforms with a local LLM, scores each listing out of 100, and generates a private dashboard — without sending your data anywhere.",
+    "hero.cta.create": "Create my agent",
+    "hero.cta.github": "View source",
+    "hero.step1.title": "Configure your profile",
+    "hero.step1.desc": "Roles, stack, location, contract, min salary — all in a guided form.",
+    "hero.step2.title": "Run the agent locally",
+    "hero.step2.desc": "Download your config, run mja run. The agent scans for you.",
+    "hero.step3.title": "Browse the matches",
+    "hero.step3.desc": "Local dashboard with detailed score — never sent anywhere.",
+    "wizard.title": "Create your configuration",
+    "wizard.subtitle": "Complete the steps below. Your config is generated in your browser — nothing is sent.",
+    "step.profile": "Profile",
+    "step.search": "Search",
+    "step.sources": "Sources",
+    "step.generate": "Generate",
+    "profile.heading": "Your search profile",
+    "profile.roles.label": "Target roles",
+    "profile.roles.placeholder": "E.g. Senior Backend Engineer — Enter to add",
+    "profile.roles.hint": "Suggestions: Senior Backend Engineer · Tech Lead · Backend Architect · Fractional CTO",
+    "profile.stackcore.label": "Core stack (must-have)",
+    "profile.stackcore.placeholder": "E.g. Node.js, TypeScript…",
+    "profile.stacknice.label": "Nice-to-have stack (bonus)",
+    "profile.stacknice.placeholder": "E.g. Docker, Kubernetes, MongoDB…",
+    "profile.exclusions.label": "Exclusions (hard stop)",
+    "profile.exclusions.placeholder": "E.g. PHP, on-site only…",
+    "profile.geography.label": "Location / Geography",
+    "profile.geography.placeholder": "E.g. Nice, Remote, Bordeaux…",
+    "profile.contract.legend": "Contract types",
+    "profile.seniority.label": "Seniority",
+    "profile.years.label": "Years of exp. (optional)",
+    "profile.years.placeholder": "E.g. 8",
+    "profile.salary.label": "Min CDI salary (€/year, optional)",
+    "profile.salary.placeholder": "E.g. 65000",
+    "profile.tjm.label": "Min daily rate (€/day, optional)",
+    "profile.tjm.placeholder": "E.g. 600",
+    "btn.add": "+ Add",
+    "btn.back": "Back",
+    "btn.copy": "Copy",
+    "btn.next.search": "Next: Search",
+    "btn.next.llm": "Next: LLM",
+    "btn.next.sources": "Next: Sources",
+    "btn.generate": "Generate my config",
+    "search.heading": "Search parameters",
+    "search.modes.legend": "Search modes",
+    "search.mode.platform.desc": "Targeted search on job platforms (WelcomeToTheJungle, Free-Work, Malt…)",
+    "search.mode.careers.desc": "Company career pages directly (Node.js hiring Nice)",
+    "search.mode.linkedin.desc": "Search on LinkedIn Jobs (may be blocked depending on ToS)",
+    "search.platforms.label": "Target platforms",
+    "search.platforms.placeholder": "E.g. talent.io",
+    "search.threshold.label": "Minimum score (0–100):",
+    "search.threshold.low": "0 — see all",
+    "search.threshold.mid": "50 — recommended",
+    "search.threshold.high": "100 — exact",
+    "llm.heading": "Language model (LLM)",
+    "llm.subtitle": "The agent uses this LLM locally to understand and score job listings.",
+    "llm.key.title": "Your API key is configured locally — never here.",
+    "llm.key.desc": "Use the environment variable JOBHUNT_LLM_API_KEY or the system keychain. Your key never passes through our servers.",
+    "llm.provider.legend": "LLM Provider",
+    "llm.ollama.desc": "Recommended — 100% local",
+    "llm.nokey": "No key",
+    "llm.lmstudio.desc": "Local, graphical UI",
+    "llm.groq.desc": "Very fast, free tier",
+    "llm.model.label": "Model name",
+    "llm.model.hint": "For Ollama: gemma4:e2b (lightweight), gemma4:e4b, qwen2.5:7b",
+    "llm.advanced.summary": "Advanced settings (base URL)",
+    "llm.baseurl.label": "LLM base URL",
+    "llm.baseurl.hint": "Ollama local: http://localhost:11434 · LM Studio: http://localhost:1234",
+    "sources.heading": "Sources to enable",
+    "sources.ft.desc": "Pôle Emploi — public listings, broad CDI coverage",
+    "sources.ft.aria": "Enable France Travail",
+    "sources.rss.title": "RSS job feeds",
+    "sources.rss.desc": "Official & stable, often with full text — no scraping. Configurable feeds in the local dashboard.",
+    "sources.rss.aria": "Enable RSS feeds",
+    "sources.wttj.desc": "Startups & scale-ups — great for tech profiles",
+    "sources.wttj.aria": "Enable Welcome to the Jungle",
+    "sources.indeed.desc": "General aggregator, high volume",
+    "sources.indeed.aria": "Enable Indeed",
+    "sources.linkedin.desc": "Professional network — scraping may be blocked",
+    "sources.linkedin.aria": "Enable LinkedIn (ToS risk)",
+    "sources.linkedin.warning": "Warning: LinkedIn scraping may violate their ToS. Enable this option at your own risk. Disabled by default.",
+    "generate.heading": "Your configuration is ready",
+    "generate.subtitle": "Download the file or copy the command to launch your agent.",
+    "generate.privacy": "Your config stays on your machine — nothing is sent.",
+    "generate.show.json": "View what it contains",
+    "generate.hide.json": "Hide JSON",
+    "generate.download": "Download jobhunt.config.json",
+    "generate.launch.title": "Launch your agent",
+    "generate.prereq": "Not yet published on PyPI: install from GitHub. Requirements: Python ≥ 3.11, git and Ollama.",
+    "generate.step.install": "1. Install (once)",
+    "generate.step.install.win": "1. Install (PowerShell, once)",
+    "generate.step.import": "2. Import your config",
+    "generate.step.run": "3. Run",
+    "generate.dashboard.note": "When the hunt is done, your local dashboard opens automatically at http://localhost:4321.",
+    "generate.rerun.title": "↻ Run again later (new terminal)",
+    "generate.rerun.desc": "The mja command lives in the project virtual environment. In a new terminal, activate it first:",
+    "generate.rerun.windows": "On Windows: .venv\\Scripts\\activate instead of line 2.\nTip: to type mja from anywhere without activating the venv, add a shell alias — alias mja=\"~/myjobagent/.venv/bin/mja\".",
+    "generate.b64.summary": "All-in-one variant (no download)",
+    "generate.b64.desc": "Paste your config inline into the command (handy for short configs). If your config exceeds ~2 KB, prefer the file.",
+    "generate.b64.label": "base64url command",
+    "generate.b64.loading": "(generating…)",
+    "generate.json.title": "Config contents (JSON)",
+    "generate.json.copy": "Copy JSON",
+    "sidebar.title": "Live preview",
+    "footer.text": "MyJobAgent — Open Source · Zero analytics · Everything stays on your machine",
+    "copied": "Copied!",
+  },
+  fr: {
+    "header.privacy": "100 % local — rien n'est envoyé",
+    "hero.badge": "Agent IA local · Open Source",
+    "hero.title": "Décris ton job idéal une fois.\nTon agent le cherche en local\net t'explique chaque score.",
+    "hero.title.highlight": "Ton agent le cherche en local",
+    "hero.subtitle": "MyJobAgent scanne les plateformes d'emploi avec un LLM local, score chaque offre sur 100 points, et génère un tableau de bord privé — sans envoyer tes données nulle part.",
+    "hero.cta.create": "Créer mon agent",
+    "hero.cta.github": "Voir le code",
+    "hero.step1.title": "Configure ton profil",
+    "hero.step1.desc": "Rôles, stack, lieu, contrat, salaire min. — tout dans un formulaire guidé.",
+    "hero.step2.title": "Lance l'agent en local",
+    "hero.step2.desc": "Télécharge ta config, exécute mja run. L'agent scanne pour toi.",
+    "hero.step3.title": "Explore les matches",
+    "hero.step3.desc": "Tableau de bord local avec score détaillé — jamais envoyé nulle part.",
+    "wizard.title": "Créer ta configuration",
+    "wizard.subtitle": "Complète les étapes ci-dessous. Ta config est générée dans ton navigateur, rien n'est envoyé.",
+    "step.profile": "Profil",
+    "step.search": "Recherche",
+    "step.sources": "Sources",
+    "step.generate": "Générer",
+    "profile.heading": "Ton profil de recherche",
+    "profile.roles.label": "Rôles recherchés",
+    "profile.roles.placeholder": "Ex : Senior Backend Engineer — Entrée pour ajouter",
+    "profile.roles.hint": "Suggestions : Senior Backend Engineer · Tech Lead · Backend Architect · Fractional CTO",
+    "profile.stackcore.label": "Stack indispensable (must-have)",
+    "profile.stackcore.placeholder": "Ex : Node.js, TypeScript…",
+    "profile.stacknice.label": "Stack nice-to-have (bonus)",
+    "profile.stacknice.placeholder": "Ex : Docker, Kubernetes, MongoDB…",
+    "profile.exclusions.label": "Exclusions (hard stop)",
+    "profile.exclusions.placeholder": "Ex : PHP, on-site only…",
+    "profile.geography.label": "Lieux / Géographie",
+    "profile.geography.placeholder": "Ex : Nice, Remote, Bordeaux…",
+    "profile.contract.legend": "Types de contrat",
+    "profile.seniority.label": "Séniorité",
+    "profile.years.label": "Années d'exp. (optionnel)",
+    "profile.years.placeholder": "Ex : 8",
+    "profile.salary.label": "Salaire min CDI (€/an, optionnel)",
+    "profile.salary.placeholder": "Ex : 65000",
+    "profile.tjm.label": "TJM min freelance (€/jour, optionnel)",
+    "profile.tjm.placeholder": "Ex : 600",
+    "btn.add": "+ Ajouter",
+    "btn.back": "Retour",
+    "btn.copy": "Copier",
+    "btn.next.search": "Suivant : Recherche",
+    "btn.next.llm": "Suivant : LLM",
+    "btn.next.sources": "Suivant : Sources",
+    "btn.generate": "Générer ma config",
+    "search.heading": "Paramètres de recherche",
+    "search.modes.legend": "Modes de recherche",
+    "search.mode.platform.desc": "Recherche ciblée sur les plateformes d'offres (WelcomeToTheJungle, Free-Work, Malt…)",
+    "search.mode.careers.desc": "Pages carrières des entreprises directement (recrutement Node.js Nice)",
+    "search.mode.linkedin.desc": "Recherche sur LinkedIn Jobs (peut être bloqué selon les CGU)",
+    "search.platforms.label": "Plateformes cibles",
+    "search.platforms.placeholder": "Ex : talent.io",
+    "search.threshold.label": "Score minimum (0–100) :",
+    "search.threshold.low": "0 — tout voir",
+    "search.threshold.mid": "50 — recommandé",
+    "search.threshold.high": "100 — exact",
+    "llm.heading": "Modèle de langage (LLM)",
+    "llm.subtitle": "L'agent utilise ce LLM en local pour comprendre et scorer les offres.",
+    "llm.key.title": "Ta clé API se configure en local — jamais ici.",
+    "llm.key.desc": "Utilise la variable d'environnement JOBHUNT_LLM_API_KEY ou le trousseau système. Ta clé ne transite jamais par nos serveurs.",
+    "llm.provider.legend": "Fournisseur LLM",
+    "llm.ollama.desc": "Recommandé — 100% local",
+    "llm.nokey": "Pas de clé",
+    "llm.lmstudio.desc": "Local, interface graphique",
+    "llm.groq.desc": "Très rapide, gratuit",
+    "llm.model.label": "Nom du modèle",
+    "llm.model.hint": "Pour Ollama : gemma4:e2b (léger), gemma4:e4b, qwen2.5:7b",
+    "llm.advanced.summary": "Paramètres avancés (URL de base)",
+    "llm.baseurl.label": "URL de base du LLM",
+    "llm.baseurl.hint": "Pour Ollama local : http://localhost:11434 · LM Studio : http://localhost:1234",
+    "sources.heading": "Sources à activer",
+    "sources.ft.desc": "Pôle Emploi — offres publiques, large couverture CDI",
+    "sources.ft.aria": "Activer France Travail",
+    "sources.rss.title": "Flux RSS de recrutement",
+    "sources.rss.desc": "Officiel & stable, souvent avec le texte complet — pas de scraping. Flux configurables ensuite dans le tableau de bord local.",
+    "sources.rss.aria": "Activer les flux RSS",
+    "sources.wttj.desc": "Startups & scale-ups — très bon pour les profils tech",
+    "sources.wttj.aria": "Activer Welcome to the Jungle",
+    "sources.indeed.desc": "Agrégateur généraliste, volume élevé",
+    "sources.indeed.aria": "Activer Indeed",
+    "sources.linkedin.desc": "Réseau professionnel — le scraping peut être bloqué",
+    "sources.linkedin.aria": "Activer LinkedIn (risque CGU)",
+    "sources.linkedin.warning": "Attention : le scraping LinkedIn peut violer leurs CGU. Active cette option à tes risques et périls. Désactivé par défaut.",
+    "generate.heading": "Ta configuration est prête",
+    "generate.subtitle": "Télécharge le fichier ou copie la commande pour lancer ton agent.",
+    "generate.privacy": "Ta config reste sur ta machine — rien n'est envoyé.",
+    "generate.show.json": "Voir ce qu'elle contient",
+    "generate.hide.json": "Masquer le JSON",
+    "generate.download": "Télécharger jobhunt.config.json",
+    "generate.launch.title": "Lancer ton agent",
+    "generate.prereq": "Projet pas encore publié sur PyPI : on installe depuis GitHub. Prérequis : Python ≥ 3.11, git et Ollama.",
+    "generate.step.install": "1. Installer (une fois)",
+    "generate.step.install.win": "1. Installer (PowerShell, une fois)",
+    "generate.step.import": "2. Importer ta config",
+    "generate.step.run": "3. Lancer",
+    "generate.dashboard.note": "Quand la chasse est terminée, ton dashboard local s'ouvre automatiquement sur http://localhost:4321.",
+    "generate.rerun.title": "↻ Relancer plus tard (nouveau terminal)",
+    "generate.rerun.desc": "La commande mja vit dans l'environnement du projet. Dans un nouveau terminal, réactive-le d'abord :",
+    "generate.rerun.windows": "Sur Windows : .venv\\Scripts\\activate à la place de la 2ᵉ ligne.\nAstuce : pour taper mja de n'importe où sans activer le venv, ajoute un alias dans ton shell — alias mja=\"~/myjobagent/.venv/bin/mja\".",
+    "generate.b64.summary": "Variante tout-en-un (sans téléchargement)",
+    "generate.b64.desc": "Colle directement ta config inline dans la commande (pratique pour config courte). Si ta config dépasse ~2 ko, préfère le fichier.",
+    "generate.b64.label": "Commande base64url",
+    "generate.b64.loading": "(génération en cours…)",
+    "generate.json.title": "Contenu de la config (JSON)",
+    "generate.json.copy": "Copier JSON",
+    "sidebar.title": "Aperçu live",
+    "footer.text": "MyJobAgent — Open Source · Zéro analytics · Tout reste sur ta machine",
+    "copied": "Copié !",
+  }
+};
+
+// Current language (global so copyText can access)
+let _currentLang: 'en' | 'fr' = 'en';
+
+function applyLang(lang: 'en' | 'fr') {
+  _currentLang = lang;
+  const dict = I18N[lang];
+
+  // Update html lang attribute
+  document.documentElement.lang = lang;
+
+  // Update textContent for data-i18n elements
+  document.querySelectorAll<HTMLElement>('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n!;
+    if (dict[key] !== undefined) {
+      // Preserve inner HTML for elements that contain child nodes (e.g. <code>)
+      // Only update textContent for simple text nodes
+      if (el.children.length === 0) {
+        el.textContent = dict[key];
+      }
+      // For elements with children, skip — they have their own child data-i18n keys
+    }
+  });
+
+  // Update placeholders
+  document.querySelectorAll<HTMLInputElement>('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder!;
+    if (dict[key] !== undefined) el.placeholder = dict[key];
+  });
+
+  // Update aria-labels
+  document.querySelectorAll<HTMLElement>('[data-i18n-aria]').forEach(el => {
+    const key = el.dataset.i18nAria!;
+    if (dict[key] !== undefined) el.setAttribute('aria-label', dict[key]);
+  });
+
+  // Update titles
+  document.querySelectorAll<HTMLElement>('[data-i18n-title]').forEach(el => {
+    const key = el.dataset.i18nTitle!;
+    if (dict[key] !== undefined) el.setAttribute('title', dict[key]);
+  });
+
+  // Update wizard nav aria-label
+  const wizNav = document.getElementById('wizard-nav-aria');
+  if (wizNav) wizNav.setAttribute('aria-label', lang === 'fr' ? 'Étapes du configurateur' : 'Configurator steps');
+
+  // Update language switcher button states
+  const btnEn = document.getElementById('lang-en');
+  const btnFr = document.getElementById('lang-fr');
+  if (btnEn && btnFr) {
+    if (lang === 'en') {
+      btnEn.style.background = 'var(--jb-primary)';
+      btnEn.style.color = 'white';
+      btnFr.style.background = 'transparent';
+      btnFr.style.color = 'var(--jb-text-muted)';
+      btnEn.setAttribute('aria-pressed', 'true');
+      btnFr.setAttribute('aria-pressed', 'false');
+    } else {
+      btnFr.style.background = 'var(--jb-primary)';
+      btnFr.style.color = 'white';
+      btnEn.style.background = 'transparent';
+      btnEn.style.color = 'var(--jb-text-muted)';
+      btnFr.setAttribute('aria-pressed', 'true');
+      btnEn.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  // Persist choice
+  try { localStorage.setItem('mja_lang', lang); } catch(e) {}
+}
+
+// Expose globally for inline onclick handlers
+(window as any).__setLang = applyLang;
+
 // ============================================================
 //  MyJobAgent Configurator — 100% client-side, zero server
 // ============================================================
@@ -812,8 +1129,8 @@ function restoreState() {
 }
 
 // ---- TAG INPUT HELPER ----
-function initTagInput(inputId, addBtnId, tagsId, stateArray, stateKey) {
-  const input = document.getElementById(inputId);
+function initTagInput(inputId: string, addBtnId: string, tagsId: string, stateArray: string[], stateKey: string) {
+  const input = document.getElementById(inputId) as HTMLInputElement;
   const addBtn = document.getElementById(addBtnId);
   const container = document.getElementById(tagsId);
 
@@ -824,7 +1141,8 @@ function initTagInput(inputId, addBtnId, tagsId, stateArray, stateKey) {
     stateArray.forEach((tag, i) => {
       const span = document.createElement('span');
       span.className = 'jb-tag';
-      span.innerHTML = `${tag}<button class="jb-tag-remove" aria-label="Supprimer ${tag}" data-idx="${i}">&times;</button>`;
+      const dict = I18N[_currentLang];
+      span.innerHTML = `${tag}<button class="jb-tag-remove" aria-label="${dict['btn.remove'] || 'Remove'} ${tag}" data-idx="${i}">&times;</button>`;
       container.appendChild(span);
     });
     updateJSON();
@@ -990,10 +1308,12 @@ function activateOsTab(os: string) {
 
 // ---- COPY HELPER ----
 async function copyText(text: string, btn: HTMLElement) {
+  const dict = I18N[_currentLang];
+  const copiedLabel = dict['copied'] || 'Copied!';
   try {
     await navigator.clipboard.writeText(text);
     const orig = btn.textContent;
-    btn.textContent = 'Copié !';
+    btn.textContent = copiedLabel;
     btn.style.color = 'var(--jb-accent-text)';
     setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1800);
   } catch(e) {
@@ -1007,7 +1327,7 @@ async function copyText(text: string, btn: HTMLElement) {
     document.execCommand('copy');
     document.body.removeChild(ta);
     const orig = btn.textContent;
-    btn.textContent = 'Copié !';
+    btn.textContent = copiedLabel;
     setTimeout(() => { btn.textContent = orig; }, 1800);
   }
 }
@@ -1037,19 +1357,33 @@ const LLM_DEFAULTS: Record<string, { model: string; base_url: string }> = {
   groq:      { model: 'llama-3.1-8b-instant',   base_url: 'https://api.groq.com/openai/v1' },
 };
 
-const MODEL_HINTS: Record<string, string> = {
-  ollama:    'Pour Ollama : gemma4:e2b (léger), gemma4:e4b, qwen2.5:7b',
-  lmstudio:  'Entrez le nom du modèle chargé dans LM Studio',
-  openai:    'Ex : gpt-4o-mini, gpt-4o, gpt-3.5-turbo',
-  anthropic: 'Ex : claude-haiku-4-5, claude-sonnet-4-5',
-  mistral:   'Ex : mistral-small-latest, mistral-medium-latest',
-  groq:      'Ex : llama-3.1-8b-instant, mixtral-8x7b-32768',
+const MODEL_HINTS: Record<string, Record<string, string>> = {
+  ollama:    { en: 'For Ollama: gemma4:e2b (lightweight), gemma4:e4b, qwen2.5:7b', fr: 'Pour Ollama : gemma4:e2b (léger), gemma4:e4b, qwen2.5:7b' },
+  lmstudio:  { en: 'Enter the name of the model loaded in LM Studio', fr: 'Entrez le nom du modèle chargé dans LM Studio' },
+  openai:    { en: 'E.g. gpt-4o-mini, gpt-4o, gpt-3.5-turbo', fr: 'Ex : gpt-4o-mini, gpt-4o, gpt-3.5-turbo' },
+  anthropic: { en: 'E.g. claude-haiku-4-5, claude-sonnet-4-5', fr: 'Ex : claude-haiku-4-5, claude-sonnet-4-5' },
+  mistral:   { en: 'E.g. mistral-small-latest, mistral-medium-latest', fr: 'Ex : mistral-small-latest, mistral-medium-latest' },
+  groq:      { en: 'E.g. llama-3.1-8b-instant, mixtral-8x7b-32768', fr: 'Ex : llama-3.1-8b-instant, mixtral-8x7b-32768' },
 };
 
 // ============================================================
 //  INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  // ---- Language detection & apply ----
+  let initLang: 'en' | 'fr' = 'en';
+  try {
+    const stored = localStorage.getItem('mja_lang');
+    if (stored === 'en' || stored === 'fr') {
+      initLang = stored;
+    } else {
+      initLang = navigator.language?.startsWith('fr') ? 'fr' : 'en';
+    }
+  } catch(e) {
+    initLang = navigator.language?.startsWith('fr') ? 'fr' : 'en';
+  }
+  applyLang(initLang);
+
   // Restore from localStorage
   restoreState();
 
@@ -1151,7 +1485,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hintEl = document.getElementById('llm-model-hint');
         if (modelEl) modelEl.value = defaults.model;
         if (urlEl) urlEl.value = defaults.base_url;
-        if (hintEl) hintEl.textContent = MODEL_HINTS[provider] || '';
+        if (hintEl) hintEl.textContent = (MODEL_HINTS[provider] && MODEL_HINTS[provider][_currentLang]) || '';
       }
       // Update card styles
       document.querySelectorAll<HTMLElement>('.llm-card').forEach(card => {
@@ -1233,10 +1567,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById(containerId);
         if (container) {
           container.innerHTML = '';
+          const dict = I18N[_currentLang];
           arr.forEach((tag, i) => {
             const span = document.createElement('span');
             span.className = 'jb-tag';
-            span.innerHTML = `${tag}<button class="jb-tag-remove" aria-label="Supprimer ${tag}" data-idx="${i}">&times;</button>`;
+            span.innerHTML = `${tag}<button class="jb-tag-remove" aria-label="${dict['btn.remove'] || 'Remove'} ${tag}" data-idx="${i}">&times;</button>`;
             container.appendChild(span);
           });
           container.addEventListener('click', (e) => {
@@ -1284,7 +1619,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!wrapper) return;
     const isHidden = wrapper.style.display === 'none';
     wrapper.style.display = isHidden ? '' : 'none';
-    (e.currentTarget as HTMLElement).textContent = isHidden ? 'Masquer le JSON' : 'voir ce qu\'elle contient';
+    const btn = e.currentTarget as HTMLElement;
+    const dict = I18N[_currentLang];
+    btn.textContent = isHidden ? (dict['generate.hide.json'] || 'Hide JSON') : (dict['generate.show.json'] || 'View what it contains');
     updateJSON();
   });
 
@@ -1318,6 +1655,13 @@ document.addEventListener('DOMContentLoaded', () => {
 /* Ensure sidebar JSON is monospace */
 #sidebar-json, #json-preview {
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+
+/* Language switcher reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #lang-switcher button {
+    transition: none !important;
+  }
 }
 </style>
 </Layout>

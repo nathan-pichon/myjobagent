@@ -234,19 +234,23 @@ def dashboard(
 
 
 @app.command()
-def irrelevant(
-    url: str = typer.Argument(..., help="Job URL to flag as not relevant."),
-    undo: bool = typer.Option(False, "--undo", help="Remove the 'not relevant' flag."),
+def flag(
+    url: str = typer.Argument(..., help="Job URL to flag."),
+    kind: str = typer.Argument("irrelevant", help="irrelevant | outdated"),
+    undo: bool = typer.Option(False, "--undo", help="Remove the flag."),
     db: str = typer.Option(DEFAULT_DB_PATH, "--db"),
 ) -> None:
-    """Flag a match as 'not relevant' — the signal the agent uses to refine its
-    strategy (`mja tune`). Use --undo to clear it."""
-    from jobhunt.store import Store
+    """Flag a match as 'irrelevant' or 'outdated' — the signal the agent uses to
+    refine its strategy (`mja tune`). Use --undo to clear it."""
+    from jobhunt.store import FEEDBACK_KINDS, Store
 
+    if not undo and kind not in FEEDBACK_KINDS:
+        console.print(f"[red]Unknown kind.[/] Use one of: {', '.join(FEEDBACK_KINDS)}")
+        raise typer.Exit(1)
     store = Store(db)
-    store.set_irrelevant(url, not undo)
+    store.set_feedback_kind(url, None if undo else kind)
     store.close()
-    console.print(f"[green]✓[/] {'Marqué non pertinent' if not undo else 'Marque retirée'}.")
+    console.print(f"[green]✓[/] {('Flag removed' if undo else f'Marked {kind}')}.")
 
 
 @app.command()

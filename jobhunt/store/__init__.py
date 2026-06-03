@@ -1,3 +1,3 @@
-from jobhunt.store.db import PIPELINE_STATUSES, Job, Store
+from jobhunt.store.db import FEEDBACK_KINDS, PIPELINE_STATUSES, Job, Store
 
-__all__ = ["Store", "Job", "PIPELINE_STATUSES"]
+__all__ = ["Store", "Job", "PIPELINE_STATUSES", "FEEDBACK_KINDS"]

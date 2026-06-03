@@ -50,10 +50,10 @@ def test_store_dedup_and_feedback(tmp_path: Path):
     jobs = s.get_jobs(min_score=50)
     assert len(jobs) == 1
     assert len(jobs[0]["sources"]) == 2
-    s.set_irrelevant("https://a.com/job/1")
+    s.set_feedback_kind("https://a.com/job/1", "irrelevant")
     assert s.quality_stats()["irrelevant"] == 1
-    s.set_irrelevant("https://a.com/job/1", False)
-    assert s.quality_stats()["irrelevant"] == 0
+    s.set_feedback_kind("https://a.com/job/1", None)
+    assert s.quality_stats()["flagged"] == 0
     s.set_status("https://a.com/job/1", "applied")
     assert len(s.get_jobs(status="applied")) == 1
     with pytest.raises(ValueError):
@@ -112,30 +112,59 @@ def test_store_rejections(tmp_path: Path):
     s.close()
 
 
-def test_irrelevant_feedback_and_supervisor(tmp_path: Path):
+def test_feedback_kinds_and_supervisor(tmp_path: Path):
     from jobhunt.dashboard.render import render
     from jobhunt.engine.supervisor import collect_feedback_signal
 
     s = Store(str(tmp_path / "t.db"))
     s.upsert_job(Job(url="https://a/1", title="Senior Backend", company="Acme",
                      location="Nice", score=82, source="a"))
-    s.upsert_job(Job(url="https://b/2", title="Marketing", company="Beta",
+    s.upsert_job(Job(url="https://b/2", title="Old role", company="Beta",
                      location="Lyon", score=70, source="b"))
-    # mark one irrelevant — fuels the Supervisor
-    s.set_irrelevant("https://a/1")
-    assert s.quality_stats() == {"irrelevant": 1, "total": 2}
-    assert len(collect_feedback_signal(s)) == 1
-    # undo
-    s.set_irrelevant("https://a/1", False)
-    assert s.quality_stats()["irrelevant"] == 0
+    # two distinct signals, both fuel the Supervisor
+    s.set_feedback_kind("https://a/1", "irrelevant")
+    s.set_feedback_kind("https://b/2", "outdated")
+    assert s.quality_stats() == {"irrelevant": 1, "outdated": 1, "flagged": 2, "total": 2}
+    sig = collect_feedback_signal(s)
+    assert any("OUTDATED" in n for n in sig) and any("NOT RELEVANT" in n for n in sig)
+    # kinds are mutually exclusive per job
+    s.set_feedback_kind("https://a/1", "outdated")
+    assert s.quality_stats()["irrelevant"] == 0 and s.quality_stats()["outdated"] == 2
+    # unknown kind rejected
+    with pytest.raises(ValueError):
+        s.set_feedback_kind("https://a/1", "bogus")
+    # clear
+    s.set_feedback_kind("https://a/1", None)
+    assert s.quality_stats()["flagged"] == 1
 
-    # dashboard: single "Pas pertinent" toggle, no thumbs, pre-marked shown active
-    s.set_irrelevant("https://b/2")
+    # dashboard: two toggles (irrelevant / outdated), no thumbs, pre-marked active
     out = render(s, default_config(), tmp_path / "d.html")
     h = out.read_text()
-    assert "Pas pertinent" in h and "irr-btn" in h and "irr-on" in h
+    assert "Pas pertinent" in h and "Périmée" in h
+    assert 'data-flag="irrelevant"' in h and 'data-flag="outdated"' in h
+    assert "flag-on" in h  # the still-flagged 'outdated' job (b/2)
     assert "👍" not in h and "👎" not in h
-    assert "/api/irrelevant" in h
+    assert "/api/feedback-kind" in h
+    s.close()
+
+
+def test_store_migrates_legacy_feedback(tmp_path):
+    """An old DB (feedback=-1, no feedback_kind column) backfills to 'irrelevant'."""
+    import sqlite3
+
+    p = str(tmp_path / "legacy.db")
+    c = sqlite3.connect(p)
+    c.executescript(
+        "CREATE TABLE jobs (url TEXT PRIMARY KEY, dedup_key TEXT, title TEXT, company TEXT,"
+        " location TEXT, contract TEXT, score INTEGER, breakdown TEXT, summary TEXT, source TEXT,"
+        " sources TEXT, status TEXT DEFAULT 'found', feedback INTEGER DEFAULT 0,"
+        " first_seen REAL, last_seen REAL);"
+        " INSERT INTO jobs (url, feedback, score) VALUES ('https://x/1', -1, 80);"
+    )
+    c.commit()
+    c.close()
+    s = Store(p)  # triggers _migrate
+    assert s.quality_stats()["irrelevant"] == 1
     s.close()
 
 

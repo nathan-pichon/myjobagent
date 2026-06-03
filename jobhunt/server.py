@@ -126,25 +126,17 @@ def _make_handler(cfg: JobHuntConfig, db: str, host: str, port: int, config_path
                 store.set_status(url, status)
                 store.close()
                 self._json(200, {"ok": True})
-            elif self.path == "/api/irrelevant":
-                # {url, irrelevant: bool} — the single feedback signal that
-                # feeds the Supervisor's strategy tuning.
-                url, irrelevant = payload.get("url"), payload.get("irrelevant", True)
-                if not url:
+            elif self.path == "/api/feedback-kind":
+                # {url, kind: "irrelevant"|"outdated"|null} — the feedback the
+                # Supervisor uses to refine strategy. null/'' clears it.
+                from jobhunt.store import FEEDBACK_KINDS
+
+                url, kind = payload.get("url"), payload.get("kind")
+                if not url or (kind and kind not in FEEDBACK_KINDS):
                     self._json(400, {"error": "bad params"})
                     return
                 store = Store(db)
-                store.set_irrelevant(url, bool(irrelevant))
-                store.close()
-                self._json(200, {"ok": True})
-            elif self.path == "/api/feedback":
-                # legacy endpoint, still accepted
-                url, value = payload.get("url"), payload.get("value")
-                if url is None or value not in (-1, 0, 1):
-                    self._json(400, {"error": "bad params"})
-                    return
-                store = Store(db)
-                store.set_feedback(url, value)
+                store.set_feedback_kind(url, kind)
                 store.close()
                 self._json(200, {"ok": True})
             elif self.path == "/api/secrets":

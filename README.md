@@ -1,148 +1,153 @@
 # 🔦 MyJobAgent
 
-> Agent de recherche d'emploi **open-source, local-first**. Décris ton job idéal une fois ;
-> ton agent le cherche, le score contre **ton** profil, t'explique pourquoi — **et rien ne quitte ta machine**.
+*[Version française](README.fr.md)*
 
-MyJobAgent tourne **chez toi**, avec **ton propre LLM** (Ollama par défaut, ou une clé API).
-Un configurateur web 100 % statique sert juste à générer ta config ;
-toute la chasse et tes données restent en local.
+> **Open-source, local-first** job-hunting agent. Describe your ideal job once;
+> your agent searches for it, scores each offer against **your** profile, explains why —
+> **and nothing ever leaves your machine.**
 
-## Pourquoi
-- **Matching explicable** : « 82/100 — il te manque juste Kubernetes » (détail du rubric Stack/Rôle/Lieu/Contrat).
-- **Privacy par défaut** : aucune donnée envoyée, bring-your-own-LLM.
-- **DX soignée** : une CLI claire, un dashboard local, des erreurs actionnables.
+MyJobAgent runs **on your machine**, with **your own LLM** (Ollama by default, or an API key).
+A 100% static web configurator only generates your config; the hunting and your data stay local.
 
-> **⚠️ Statut : alpha.** Le moteur, la CLI et le dashboard local fonctionnent. Le projet
-> n'est pas encore publié sur PyPI ni déployé en ligne — on installe depuis les sources
-> (ci-dessous). Le configurateur web se lance en local (`web/`, voir [`web/README.md`](web/README.md)).
+## Why
+- **Explainable matching**: "82/100 — you're only missing Kubernetes" (Stack/Role/Location/Contract rubric breakdown).
+- **Privacy by default**: nothing sent out, bring-your-own-LLM.
+- **Polished DX**: a clear CLI, a local dashboard, actionable errors.
 
-## Prérequis
+> **⚠️ Status: alpha.** The engine, CLI and local dashboard work. The project isn't
+> published on PyPI or deployed online yet — you install from source (below). The web
+> configurator runs locally (`web/`, see [`web/README.md`](web/README.md)).
+
+## Requirements
 - **Python ≥ 3.11**
-- **[Ollama](https://ollama.com)** installé et lancé (pour le LLM local par défaut). Ou une clé API (OpenAI/Anthropic/…).
-- **~3 Go d'espace disque** : ~2 Go pour le modèle `gemma4:e2b`, ~150 Mo pour Chromium (scraping).
-- ⏱️ La 1ʳᵉ install prend ~10–15 min (téléchargements). Une chasse tourne en arrière-plan ;
-  les LLM locaux sont lents (~quelques dizaines de secondes par offre), c'est normal — laisse l'agent travailler.
+- **[Ollama](https://ollama.com)** installed and running (for the default local LLM). Or an API key (OpenAI/Anthropic/…).
+- **~3 GB of disk**: ~2 GB for the `gemma4:e2b` model, ~150 MB for Chromium (scraping).
+- ⏱️ First install takes ~10–15 min (downloads). A hunt runs in the background;
+  local LLMs are slow (~tens of seconds per offer), that's normal — let the agent work.
 
-## Installation (depuis GitHub)
-> Pas encore publié sur PyPI : on installe depuis les sources. C'est 5 commandes.
+## Installation (from GitHub)
+> Not on PyPI yet: install from source. It's 5 commands.
 
 ```bash
-# 1. Récupérer le projet
+# 1. Get the project
 git clone https://github.com/nathan-pichon/myjobagent.git
-cd jobbeacon
+cd myjobagent
 
-# 2. Environnement Python isolé
+# 2. Isolated Python environment
 python3 -m venv .venv
-source .venv/bin/activate            # Windows : .venv\Scripts\activate
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
 
-# 3. Installer MyJobAgent + le moteur de scraping
+# 3. Install MyJobAgent + the scraping engine
 pip install -e '.[scrape]'
-playwright install chromium          # navigateur headless, 1ʳᵉ fois
+playwright install chromium          # headless browser, first time only
 
-# 4. Préparer le LLM local (dans un autre terminal, ou en arrière-plan)
+# 4. Prepare the local LLM (in another terminal, or in the background)
 ollama serve &
-ollama pull gemma4:e2b               # ~2 Go ; modèle léger validé par notre éval qualité
+ollama pull gemma4:e2b               # ~2 GB; light model validated by our quality eval
 ```
 
-## Premier lancement
+## First run
 ```bash
-mja init --seed     # crée une config de démarrage (jobhunt.config.json)
-mja doctor          # vérifie que tout est prêt (Python, LLM, sources…) — vise du vert
-mja run             # première chasse
-mja dashboard       # ouvre le tableau de bord local (http://127.0.0.1:4321)
+mja init --seed     # create a starter config (jobhunt.config.json)
+mja doctor          # check everything is ready (Python, LLM, sources…) — aim for green
+mja run             # first hunt
+mja dashboard       # open the local dashboard (http://127.0.0.1:4321)
 ```
 
-`mja doctor` est ton ami : il liste précisément ce qui manque et la commande pour corriger.
+`mja doctor` is your friend: it lists exactly what's missing and the command to fix it.
 
-> **`mja` vit dans le venv.** La commande n'est disponible que lorsque l'environnement du projet
-> est activé. Dans un **nouveau terminal**, réactive-le d'abord :
+> **`mja` lives in the venv.** The command is only available while the project's environment
+> is activated. In a **new terminal**, reactivate it first:
 > ```bash
-> cd myjobagent && source .venv/bin/activate    # Windows : .venv\Scripts\activate
+> cd myjobagent && source .venv/bin/activate    # Windows: .venv\Scripts\activate
 > mja run
 > ```
-> Pour taper `mja` de partout sans activer le venv, ajoute un alias à ton shell
-> (`~/.zshrc`, `~/.bashrc`) : `alias mja="~/myjobagent/.venv/bin/mja"`.
+> To type `mja` from anywhere without activating the venv, add a shell alias
+> (`~/.zshrc`, `~/.bashrc`): `alias mja="~/myjobagent/.venv/bin/mja"`.
 
-> **Adapter à ton profil** : `mja init --seed` génère une config orientée *backend Node.js
-> / Côte d'Azur* (l'exemple d'origine). Édite `jobhunt.config.json` à la main, ou regénère-la
-> avec le configurateur web, puis `mja init ~/Downloads/jobhunt.config.json`.
+> **Adapt it to your profile**: `mja init --seed` generates a config geared toward *backend
+> Node.js / French Riviera* (the original example). Edit `jobhunt.config.json` by hand, or
+> regenerate it with the web configurator, then `mja init ~/Downloads/jobhunt.config.json`.
 
-### Modèle LLM : lequel choisir ?
-- `gemma4:e2b` (défaut) — léger (~2 Go), rapide, suffisant. **Idéal pour démarrer.**
-- `gemma4:e4b` — un peu plus précis sur les cas ambigus.
-- `qwen2.5:7b` ou une **clé API cloud** (OpenAI/Anthropic…) — qualité maximale.
+### Which LLM model?
+- `gemma4:e2b` (default) — light (~2 GB), fast, good enough. **Ideal to start.**
+- `gemma4:e4b` — slightly more precise on ambiguous cases.
+- `qwen2.5:7b` or a **cloud API key** (OpenAI/Anthropic…) — maximum quality.
 
-Change de modèle dans `jobhunt.config.json` (`llm.model`) ou via ⚙ Réglages dans le dashboard.
-Détails et chiffres de qualité : [`eval/RESULTS.md`](eval/RESULTS.md).
+Change the model in `jobhunt.config.json` (`llm.model`) or via ⚙ Settings in the dashboard.
+Details and quality numbers: [`eval/RESULTS.md`](eval/RESULTS.md).
 
-### Tableau de bord local
-`mja dashboard` démarre un petit serveur **sur `127.0.0.1` uniquement** (jamais exposé
-au réseau) : le Kanban (drag & drop) et le feedback 👍/👎 s'enregistrent directement dans
-ta base locale. Aucun backend en ligne. `--static` produit juste un fichier HTML (le
-glisser-déposer y est alors mémorisé dans le navigateur + commande `mja move` à coller).
+### Local dashboard
+`mja dashboard` starts a small server **on `127.0.0.1` only** (never exposed to the network):
+the Kanban (drag & drop) and your feedback persist directly to your local database. No online
+backend. `--static` just writes an HTML file (drag & drop is then remembered in the browser +
+an `mja move` command to paste).
 
-**Réglages (⚙, dans le dashboard local)** — tout se configure sans toucher au terminal :
-- **Clés & identifiants** (clé API du LLM cloud, identifiants France Travail) — saisis et
-  stockés **en local** (fichier `0600`), jamais envoyés en ligne. *(Le configurateur web
-  *statique* ne demande jamais de clé ; seul le dashboard *local* le fait, car il tourne sur ta machine.)*
-- **Chasse automatique** — active une chasse récurrente toutes les X heures + notification,
-  ou « ▶ Lancer maintenant ». Géré par un planificateur local tant que le dashboard tourne.
+**Feedback on a match** — in the offer detail, two toggles feed the agent's strategy
+(`mja tune`): **"Not relevant"** (the offer was over-scored) and **"Outdated"** (the offer was
+stale/expired). From the CLI: `mja flag <url> irrelevant|outdated [--undo]`.
 
-Résolution des secrets : variable d'environnement d'abord, sinon le fichier local. Une clé
-définie par variable d'env est verrouillée dans l'UI (affichée comme telle, non modifiable).
+**Settings (⚙, in the local dashboard)** — everything configurable without the terminal:
+- **Keys & credentials** (cloud LLM API key, France Travail credentials) — entered and stored
+  **locally** (`0600` file), never sent online. *(The *static* web configurator never asks for a
+  key; only the *local* dashboard does, since it runs on your machine.)*
+- **Automatic hunting** — enable a recurring hunt every X hours + notification, or
+  "▶ Run now". Managed by a local scheduler while the dashboard is running.
 
-Suivi en CLI aussi : `mja move <url> <statut>` · `mja pipeline` ·
-`mja feedback <url> --up/--down`.
+Secret resolution: environment variable first, otherwise the local file. A key set via env var
+is locked in the UI (shown as such, not editable).
 
-### Sources d'offres (sourcing fiabilisé)
-Le sourcing est en couches : **les sources officielles d'abord, la recherche web en repli.**
+Pipeline tracking from the CLI too: `mja move <url> <status>` · `mja pipeline`.
 
-| Source | Type | Fiabilité | Texte de l'offre |
+### Job sources (reliable sourcing)
+Sourcing is layered: **official sources first, web search as fallback.**
+
+| Source | Type | Reliability | Offer text |
 |---|---|---|---|
-| **France Travail** (API v2 officielle) | API REST, OAuth2 | élevée, légale | **inclus** → pas de scraping |
-| **Flux RSS** de recrutement | RSS 2.0 / Atom | **élevée, stable** | **souvent inclus** → pas de scraping |
-| Web (DuckDuckGo + scraping) | recherche large | variable (rate-limit) | scrapé (Playwright), avec retry/backoff |
-| LinkedIn / Indeed | — | **OFF par défaut** (CGU anti-scraping) | opt-in explicite |
+| **France Travail** (official API v2) | REST API, OAuth2 | high, legal | **included** → no scraping |
+| **Recruitment RSS feeds** | RSS 2.0 / Atom | **high, stable** | **often included** → no scraping |
+| Web (DuckDuckGo + scraping) | broad search | variable (rate-limit) | scraped (Playwright), with retry/backoff |
+| LinkedIn / Indeed | — | **OFF by default** (anti-scraping ToS) | explicit opt-in |
 
-Les **flux RSS** sont **pré-remplis** avec une liste par défaut (WeWorkRemotely, Remotive,
-RemoteOK, Himalayas…) que tu **vois et modifies** dans le dashboard local (⚙ Réglages) :
-ajoute/supprime des flux au format `Nom | url`, ou clique « ↺ Restaurer les flux par défaut ».
-Si tu les supprimes tous, c'est respecté (pas de réinjection). Un flux est récupéré une fois
-par run puis filtré localement par mots-clés ; le Recruteur fait le scoring précis ensuite.
+**RSS feeds** come **pre-filled** with a default list (WeWorkRemotely, Remotive, RemoteOK,
+Himalayas…) that you **see and edit** in the local dashboard (⚙ Settings): add/remove feeds in
+`Name | url` format, or click "↺ Restore default feeds". If you remove them all, that's
+respected (no re-injection). A feed is fetched once per run then filtered locally by keywords;
+the Recruteur does the precise scoring afterward.
 
-Les offres qui arrivent **avec leur texte** (France Travail) sont scorées directement —
-plus fiable *et* plus rapide (zéro navigateur). Si une source tombe, le run continue sur les autres.
+Offers that arrive **with their text** (France Travail) are scored directly — more reliable
+*and* faster (no browser). If one source fails, the run continues with the others.
 
-**Activer France Travail** (recommandé) : crée une appli sur [francetravail.io](https://francetravail.io),
-abonne-toi à « Offres d'emploi v2 », puis exporte les identifiants **en local** (jamais sur le web) :
+**Enable France Travail** (recommended): create an app on [francetravail.io](https://francetravail.io),
+subscribe to "Offres d'emploi v2", then export the credentials **locally** (never on the web):
 ```bash
 export FRANCE_TRAVAIL_CLIENT_ID=...
 export FRANCE_TRAVAIL_CLIENT_SECRET=...
 ```
-`mja doctor` affiche l'état de chaque source.
+`mja doctor` shows the status of each source.
 
 ## Architecture
 ```
 jobhunt/
-  config.py        # schéma jobhunt.config.json (Pydantic) — contrat web ↔ local
+  config.py        # jobhunt.config.json schema (Pydantic) — web ↔ local contract
   llm/             # bring-your-own-LLM (ollama, openai-compat, anthropic)
-  sources/         # couche sourcing : france_travail (API) · web_search (fallback)
+  sources/         # sourcing layer: france_travail (API) · rss · web_search (fallback)
   engine/          # scout · trieur · recruteur · filters · scrapers · loop
-  store/           # SQLite local (jobs, pipeline, feedback 👍👎, runs)
-  dashboard/       # rendu du tableau de bord local + serveur 127.0.0.1
-  prompts/         # templates Jinja2 des agents
-eval/              # harnais d'éval du matching (Phase −1, GATE qualité)
-product/           # dossier produit (scope, design, roadmap, revues, décisions)
+  store/           # local SQLite (jobs, pipeline, feedback, runs)
+  dashboard/       # local dashboard rendering + 127.0.0.1 server
+  prompts/         # agents' Jinja2 templates
+eval/              # matching eval harness (Phase −1, quality GATE)
+product/           # product docs (scope, design, roadmap, reviews, decisions)
 ```
 
-## Statut
-Alpha (v0.1). Fonctionnel : moteur, CLI, dashboard local interactif, sources (France Travail /
-RSS / web), digest, chasse planifiée, feedback. À venir : publication PyPI, déploiement du
-configurateur web, app desktop. Feuille de route : [`product/03_ROADMAP.md`](product/03_ROADMAP.md).
+## Status
+Alpha (v0.1). Working: engine, CLI, interactive local dashboard, sources (France Travail /
+RSS / web), digest, scheduled hunting, feedback. Coming: PyPI release, web configurator
+deployment, desktop app. Roadmap: [`product/03_ROADMAP.md`](product/03_ROADMAP.md).
 
-## Contribuer
-Voir [`CONTRIBUTING.md`](CONTRIBUTING.md). Principe directeur : **local-first**, aucun backend
-externe en ligne, aucun secret côté web statique.
+## Contributing
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). Guiding principle: **local-first**, no external online
+backend, no secrets on the static web side.
 
-## Licence
-AGPL-3.0-or-later. Voir [`LICENSE`](LICENSE).
+## License
+AGPL-3.0-or-later. See [`LICENSE`](LICENSE).

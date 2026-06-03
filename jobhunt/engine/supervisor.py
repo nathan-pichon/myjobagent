@@ -23,16 +23,31 @@ console = Console()
 
 
 def collect_feedback_signal(store: Store, limit: int = 20) -> list[str]:
-    """Turn 'not relevant'-flagged matches into improvement notes for the Recruteur."""
+    """Turn user-flagged matches into improvement notes for the Recruteur.
+
+    Two distinct signals:
+      * irrelevant → the offer was over-scored (tighten the rubric/gates).
+      * outdated   → the offer was stale/expired (be stricter on freshness and
+        on the expired-offer markers before scoring).
+    """
     rows = store.conn.execute(
-        "SELECT title, company, score, summary FROM jobs WHERE feedback = -1 ORDER BY score DESC LIMIT ?",
+        "SELECT title, company, score, summary, feedback_kind FROM jobs "
+        "WHERE feedback_kind IN ('irrelevant','outdated') ORDER BY score DESC LIMIT ?",
         (limit,),
     ).fetchall()
-    return [
-        f"User marked as NOT relevant despite score {r['score']}: "
-        f"{r['title']} @ {r['company']} — {r['summary'][:120]}"
-        for r in rows
-    ]
+    notes = []
+    for r in rows:
+        if r["feedback_kind"] == "outdated":
+            notes.append(
+                f"User marked as OUTDATED (stale/expired offer) despite score {r['score']}: "
+                f"{r['title']} @ {r['company']} — {(r['summary'] or '')[:120]}"
+            )
+        else:
+            notes.append(
+                f"User marked as NOT RELEVANT despite score {r['score']}: "
+                f"{r['title']} @ {r['company']} — {(r['summary'] or '')[:120]}"
+            )
+    return notes
 
 
 def tune_recruteur(cfg: JobHuntConfig, store: Store, *, dry_run: bool = True) -> str | None:
