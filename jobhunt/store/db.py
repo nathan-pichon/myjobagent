@@ -1,7 +1,7 @@
 """Local SQLite persistence — everything stays on the user's machine.
 
 Replaces the original memory.json. Tracks jobs (with explainable breakdown),
-runs, the application pipeline status, and the user's 👍/👎 feedback (the only
+runs, the application pipeline status, and the user's "not relevant" flag (the only
 local source of truth on matching quality, and fuel for the Supervisor).
 """
 from __future__ import annotations
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     source        TEXT,
     sources       TEXT,        -- JSON list of urls merged via dedup
     status        TEXT DEFAULT 'found',
-    feedback      INTEGER DEFAULT 0,   -- 1=👍, -1=👎, 0=none
+    feedback      INTEGER DEFAULT 0,   -- -1=not relevant, 0=none (legacy 1=relevant)
     first_seen    REAL,
     last_seen     REAL
 );
@@ -157,14 +157,20 @@ class Store:
         self.conn.commit()
 
     def set_feedback(self, url: str, feedback: int) -> None:
+        """feedback: -1 = irrelevant (fuels the Supervisor), 0 = none.
+        (Legacy +1 'relevant' is no longer set by the UI but still tolerated.)"""
         self.conn.execute("UPDATE jobs SET feedback=? WHERE url=?", (max(-1, min(1, feedback)), url))
         self.conn.commit()
 
+    def set_irrelevant(self, url: str, irrelevant: bool = True) -> None:
+        """Mark/unmark a job as 'not relevant' — the single feedback signal."""
+        self.set_feedback(url, -1 if irrelevant else 0)
+
     def quality_stats(self) -> dict[str, int]:
         row = self.conn.execute(
-            "SELECT SUM(feedback=1) up, SUM(feedback=-1) down, COUNT(*) total FROM jobs"
+            "SELECT SUM(feedback=-1) irrelevant, COUNT(*) total FROM jobs"
         ).fetchone()
-        return {"up": row["up"] or 0, "down": row["down"] or 0, "total": row["total"] or 0}
+        return {"irrelevant": row["irrelevant"] or 0, "total": row["total"] or 0}
 
     # --- "Why-not": rejected offers --------------------------------------- #
     def record_rejection(self, url: str, reason: str, detail: str = "", score: int = 0) -> None:

@@ -90,9 +90,11 @@ a.view{color:var(--jb-primary);text-decoration:none;font-size:.85rem}
 .detail-actions{display:flex;align-items:center;gap:.5rem;margin:.4rem 0}
 .btn-offer{display:inline-block;background:var(--jb-primary);color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;padding:.45rem .9rem;border-radius:8px}
 .btn-offer:hover{filter:brightness(1.08)}
-.fb-btn{font-size:1rem;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:8px;padding:.3rem .6rem;cursor:pointer;line-height:1}
+.fb-btn{font-size:.95rem;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:8px;padding:.3rem .6rem;cursor:pointer;line-height:1}
 .fb-btn:hover,.fb-btn:focus{border-color:var(--jb-primary)}
-.fb-btn.fb-on{background:var(--jb-primary-soft,#E8F0FF);border-color:var(--jb-primary)}
+.irr-btn{font-size:.8rem;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:8px;padding:.4rem .7rem;cursor:pointer;line-height:1;color:var(--jb-text-muted)}
+.irr-btn:hover,.irr-btn:focus{border-color:var(--jb-danger);color:var(--jb-danger)}
+.irr-btn.irr-on{background:color-mix(in srgb, var(--jb-danger) 12%, var(--jb-surface));border-color:var(--jb-danger);color:var(--jb-danger);font-weight:600}
 @media(max-width:760px){.kbn{grid-template-columns:repeat(2,1fr)}}
 .settings-btn{margin-left:auto;background:var(--jb-surface-alt);border:1px solid var(--jb-border);border-radius:999px;padding:.3rem .8rem;font-size:.8rem;cursor:pointer;color:var(--jb-text)}
 .settings-btn:hover,.settings-btn:focus{border-color:var(--jb-primary);color:var(--jb-primary)}
@@ -195,8 +197,7 @@ def _card_detail(job: dict) -> str:
       </div>
       <div class="detail-actions">
         <a class="btn-offer" href="{html.escape(job.get('url','#'))}" target="_blank" rel="noopener">Voir l'offre ↗</a>
-        <button class="fb-btn" data-fb="1" data-url="{html.escape(job.get('url',''))}" aria-label="Marquer pertinent" title="Pertinent">👍</button>
-        <button class="fb-btn" data-fb="-1" data-url="{html.escape(job.get('url',''))}" aria-label="Marquer non pertinent" title="Pas pertinent">👎</button>
+        <button class="irr-btn{' irr-on' if job.get('feedback') == -1 else ''}" data-url="{html.escape(job.get('url',''))}" aria-pressed="{'true' if job.get('feedback') == -1 else 'false'}" title="L'agent en tiendra compte pour affiner sa stratégie">⊘ Pas pertinent</button>
       </div>
       <p class="summary">{html.escape(job.get('summary',''))}</p>
       <div class="breakdown">{segs or '<em>Pas de détail disponible.</em>'}</div>
@@ -351,21 +352,23 @@ _KANBAN_JS = r"""
     var tpl = document.getElementById(card.dataset.detail);
     if(!tpl) return;
     body.innerHTML = ''; body.appendChild(tpl.content.cloneNode(true));
-    // wire feedback buttons (server mode persists; file mode shows a hint)
-    body.querySelectorAll('.fb-btn').forEach(function(b){
-      b.addEventListener('click', function(){
-        var url=b.dataset.url, val=parseInt(b.dataset.fb,10);
-        body.querySelectorAll('.fb-btn').forEach(function(x){x.classList.remove('fb-on');});
-        b.classList.add('fb-on');
+    // wire the "Pas pertinent" toggle — the single feedback signal the agent
+    // uses to refine its strategy (server mode persists; file mode copies a cmd)
+    var irr = body.querySelector('.irr-btn');
+    if(irr){
+      irr.addEventListener('click', function(){
+        var url=irr.dataset.url;
+        var on = irr.classList.toggle('irr-on');
+        irr.setAttribute('aria-pressed', on ? 'true' : 'false');
         if(TOKEN){
-          fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json','X-JB-Token':TOKEN},
-            body:JSON.stringify({url:url,value:val})}).catch(function(){});
+          fetch('/api/irrelevant',{method:'POST',headers:{'Content-Type':'application/json','X-JB-Token':TOKEN},
+            body:JSON.stringify({url:url, irrelevant:on})}).catch(function(){});
         } else {
-          var cmd='mja feedback "'+url+'" '+(val>0?'--up':'--down');
+          var cmd='mja irrelevant "'+url+'"' + (on ? '' : ' --undo');
           if(navigator.clipboard) navigator.clipboard.writeText(cmd).catch(function(){});
         }
       });
-    });
+    }
     modal.hidden = false; modal.querySelector('.modal-close').focus();
   }
   function closeModal(){ modal.hidden = true; }
@@ -650,7 +653,7 @@ def render(store: "Store", cfg: "JobHuntConfig", out_path: Path) -> Path:
   <span id="new-jobs-label">✦ De nouvelles offres sont arrivées</span>
   <button id="new-jobs-reload" class="toast-btn">Afficher</button>
 </div>
-<p class="meta">{len(jobs)} offre(s) · score moyen {avg} · {strong} fort(s) match(s) · 👍 {qs['up']} / 👎 {qs['down']}</p>
+<p class="meta">{len(jobs)} offre(s) · score moyen {avg} · {strong} fort(s) match(s){f" · {qs['irrelevant']} marquée(s) non pertinente(s)" if qs['irrelevant'] else ""}</p>
 <div class="bar">
   <div class="kpi"><b>{len(jobs)}</b><span>offres ≥ {cfg.scoring.threshold}</span></div>
   <div class="kpi"><b>{strong}</b><span>≥ 75 (forts)</span></div>

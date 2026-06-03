@@ -25,5 +25,5 @@ memory_failures.json
 .env
 
 # transient jsdom test scripts
-_t.cjs
-web/_t.cjs
+_*.cjs
+web/_*.cjs

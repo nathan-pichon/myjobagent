@@ -50,8 +50,10 @@ def test_store_dedup_and_feedback(tmp_path: Path):
     jobs = s.get_jobs(min_score=50)
     assert len(jobs) == 1
     assert len(jobs[0]["sources"]) == 2
-    s.set_feedback("https://a.com/job/1", 1)
-    assert s.quality_stats()["up"] == 1
+    s.set_irrelevant("https://a.com/job/1")
+    assert s.quality_stats()["irrelevant"] == 1
+    s.set_irrelevant("https://a.com/job/1", False)
+    assert s.quality_stats()["irrelevant"] == 0
     s.set_status("https://a.com/job/1", "applied")
     assert len(s.get_jobs(status="applied")) == 1
     with pytest.raises(ValueError):
@@ -107,6 +109,33 @@ def test_store_rejections(tmp_path: Path):
     s.record_rejection("https://y.com/paris", "location", "wrong city", 40)
     assert s.rejection_summary() == {"stack": 1, "location": 1}
     assert len(s.get_rejections()) == 2
+    s.close()
+
+
+def test_irrelevant_feedback_and_supervisor(tmp_path: Path):
+    from jobhunt.dashboard.render import render
+    from jobhunt.engine.supervisor import collect_feedback_signal
+
+    s = Store(str(tmp_path / "t.db"))
+    s.upsert_job(Job(url="https://a/1", title="Senior Backend", company="Acme",
+                     location="Nice", score=82, source="a"))
+    s.upsert_job(Job(url="https://b/2", title="Marketing", company="Beta",
+                     location="Lyon", score=70, source="b"))
+    # mark one irrelevant — fuels the Supervisor
+    s.set_irrelevant("https://a/1")
+    assert s.quality_stats() == {"irrelevant": 1, "total": 2}
+    assert len(collect_feedback_signal(s)) == 1
+    # undo
+    s.set_irrelevant("https://a/1", False)
+    assert s.quality_stats()["irrelevant"] == 0
+
+    # dashboard: single "Pas pertinent" toggle, no thumbs, pre-marked shown active
+    s.set_irrelevant("https://b/2")
+    out = render(s, default_config(), tmp_path / "d.html")
+    h = out.read_text()
+    assert "Pas pertinent" in h and "irr-btn" in h and "irr-on" in h
+    assert "👍" not in h and "👎" not in h
+    assert "/api/irrelevant" in h
     s.close()
 
 

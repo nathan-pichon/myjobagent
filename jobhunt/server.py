@@ -1,7 +1,7 @@
 """Local dashboard server — 127.0.0.1 only, stdlib only, zero external host.
 
 Serves the dashboard and a tiny JSON API that writes directly to the local
-SQLite store, so the Kanban drag & drop and 👍/👎 feedback persist for real
+SQLite store, so the Kanban drag & drop and "not relevant" feedback persist for real
 without copy-pasting commands.
 
 Security model (it's a personal local tool, but we still guard against
@@ -126,7 +126,19 @@ def _make_handler(cfg: JobHuntConfig, db: str, host: str, port: int, config_path
                 store.set_status(url, status)
                 store.close()
                 self._json(200, {"ok": True})
+            elif self.path == "/api/irrelevant":
+                # {url, irrelevant: bool} — the single feedback signal that
+                # feeds the Supervisor's strategy tuning.
+                url, irrelevant = payload.get("url"), payload.get("irrelevant", True)
+                if not url:
+                    self._json(400, {"error": "bad params"})
+                    return
+                store = Store(db)
+                store.set_irrelevant(url, bool(irrelevant))
+                store.close()
+                self._json(200, {"ok": True})
             elif self.path == "/api/feedback":
+                # legacy endpoint, still accepted
                 url, value = payload.get("url"), payload.get("value")
                 if url is None or value not in (-1, 0, 1):
                     self._json(400, {"error": "bad params"})

@@ -213,7 +213,7 @@ def dashboard(
     static: bool = typer.Option(False, "--static", help="Just write an HTML file (no local server)."),
 ) -> None:
     """Open the local dashboard. By default runs a 127.0.0.1-only server so the
-    Kanban drag & drop and 👍/👎 persist directly to your local store."""
+    Kanban drag & drop and "not relevant" flag persist directly to your local store."""
     cfg = _load(config)
     if static:
         _render_and_open(cfg, db)
@@ -234,22 +234,19 @@ def dashboard(
 
 
 @app.command()
-def feedback(
-    url: str = typer.Argument(..., help="Job URL to rate."),
-    up: bool = typer.Option(False, "--up", help="👍 relevant"),
-    down: bool = typer.Option(False, "--down", help="👎 not relevant"),
+def irrelevant(
+    url: str = typer.Argument(..., help="Job URL to flag as not relevant."),
+    undo: bool = typer.Option(False, "--undo", help="Remove the 'not relevant' flag."),
     db: str = typer.Option(DEFAULT_DB_PATH, "--db"),
 ) -> None:
-    """Rate a match 👍/👎 — the local source of truth on matching quality."""
-    if up == down:
-        console.print("[red]Pass exactly one of --up / --down.[/]")
-        raise typer.Exit(1)
+    """Flag a match as 'not relevant' — the signal the agent uses to refine its
+    strategy (`mja tune`). Use --undo to clear it."""
     from jobhunt.store import Store
 
     store = Store(db)
-    store.set_feedback(url, 1 if up else -1)
+    store.set_irrelevant(url, not undo)
     store.close()
-    console.print(f"[green]✓[/] Feedback saved ({'👍' if up else '👎'}).")
+    console.print(f"[green]✓[/] {'Marqué non pertinent' if not undo else 'Marque retirée'}.")
 
 
 @app.command()
@@ -302,7 +299,8 @@ def tune(
     db: str = typer.Option(DEFAULT_DB_PATH, "--db"),
     apply: bool = typer.Option(False, "--apply", help="Write the revised prompt (default: dry-run preview)."),
 ) -> None:
-    """Improve the Recruteur prompt from your 👎 feedback (opt-in, never silent)."""
+    """Improve the Recruteur prompt from the offers you flagged 'not relevant'
+    (opt-in, never silent)."""
     cfg = _load(config)
     from jobhunt.engine.supervisor import tune_recruteur
     from jobhunt.store import Store

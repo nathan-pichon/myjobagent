@@ -2,7 +2,7 @@
 
 Refactor of utils/supervisor.py onto the new package. Two signal sources:
  1. Agent failures logged during a run (malformed JSON, false positives).
- 2. The user's 👎 feedback on matches (the local source of truth on quality).
+ 2. The user's 'not relevant' flags on matches (the local truth on quality).
 
 It rewrites the ACTIVE prompt files under jobhunt/prompts/ surgically. Opt-in:
 only runs when explicitly invoked (mja tune), never silently, so a small
@@ -23,7 +23,7 @@ console = Console()
 
 
 def collect_feedback_signal(store: Store, limit: int = 20) -> list[str]:
-    """Turn 👎-rated matches into concise improvement notes for the Recruteur."""
+    """Turn 'not relevant'-flagged matches into improvement notes for the Recruteur."""
     rows = store.conn.execute(
         "SELECT title, company, score, summary FROM jobs WHERE feedback = -1 ORDER BY score DESC LIMIT ?",
         (limit,),
@@ -37,10 +37,11 @@ def collect_feedback_signal(store: Store, limit: int = 20) -> list[str]:
 
 def tune_recruteur(cfg: JobHuntConfig, store: Store, *, dry_run: bool = True) -> str | None:
     """Propose (and optionally apply) a surgical Recruteur prompt revision based
-    on the user's 👎 feedback. Returns the proposed prompt, or None if no signal."""
+    on the offers the user flagged 'not relevant'. Returns the proposed prompt,
+    or None if no signal yet."""
     notes = collect_feedback_signal(store)
     if not notes:
-        console.print("[dim]No 👎 feedback yet — nothing to tune.[/]")
+        console.print("[dim]No 'not relevant' flags yet — nothing to tune.[/]")
         return None
 
     active = PROMPTS_DIR / "recruteur.md"
