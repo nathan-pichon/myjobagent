@@ -1,5 +1,7 @@
 # 🔦 MyJobAgent
 
+### 👉 [**Configure your agent → nathan-pichon.github.io/myjobagent**](https://nathan-pichon.github.io/myjobagent/)
+
 *[Version française](README.fr.md)*
 
 > **Open-source, local-first** job-hunting agent. Describe your ideal job once;
@@ -14,9 +16,8 @@ A 100% static web configurator only generates your config; the hunting and your 
 - **Privacy by default**: nothing sent out, bring-your-own-LLM.
 - **Polished DX**: a clear CLI, a local dashboard, actionable errors.
 
-> **⚠️ Status: alpha.** The engine, CLI and local dashboard work. The project isn't
-> published on PyPI or deployed online yet — you install from source (below). The web
-> configurator runs locally (`web/`, see [`web/README.md`](web/README.md)).
+> **⚠️ Status: alpha.** The engine, CLI and local dashboard work. The web configurator is
+> live (link above); the engine isn't on PyPI yet, so you install it from source (below).
 
 ## Requirements
 - **Python ≥ 3.11**

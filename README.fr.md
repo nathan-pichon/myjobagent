@@ -1,5 +1,7 @@
 # 🔦 MyJobAgent
 
+### 👉 [**Configure ton agent → nathan-pichon.github.io/myjobagent**](https://nathan-pichon.github.io/myjobagent/)
+
 *[English version](README.md)*
 
 > Agent de recherche d'emploi **open-source, local-first**. Décris ton job idéal une fois ;
@@ -14,9 +16,9 @@ toute la chasse et tes données restent en local.
 - **Privacy par défaut** : aucune donnée envoyée, bring-your-own-LLM.
 - **DX soignée** : une CLI claire, un dashboard local, des erreurs actionnables.
 
-> **⚠️ Statut : alpha.** Le moteur, la CLI et le dashboard local fonctionnent. Le projet
-> n'est pas encore publié sur PyPI ni déployé en ligne — on installe depuis les sources
-> (ci-dessous). Le configurateur web se lance en local (`web/`, voir [`web/README.md`](web/README.md)).
+> **⚠️ Statut : alpha.** Le moteur, la CLI et le dashboard local fonctionnent. Le configurateur
+> web est en ligne (lien ci-dessus) ; le moteur n'est pas encore sur PyPI, on l'installe depuis
+> les sources (ci-dessous).
 
 ## Prérequis
 - **Python ≥ 3.11**
